@@ -6,6 +6,7 @@ public class scriptGhem : MonoBehaviour {
 
     // Use this for initialization
     Rigidbody2D mRbody;             // Pt iulian, m-ul din fata e o conventie ca datele membru sa fie cu m , te pup :* 
+									// Juliano.
 
     void Start()
     {
