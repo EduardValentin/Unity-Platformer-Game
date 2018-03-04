@@ -22,5 +22,7 @@ public class scriptObiect : MonoBehaviour {
         mDirectie *= -1;
     }
 
-    virtual protected void doMovement() { }           // Trebuie supraincarcata in scripturile speciala pentru miscari
+    virtual protected void doMovement() { }          // Trebuie supraincarcata in scripturile speciala pentru miscari
+    virtual protected void collisionAction() { }          // Trebuie supraincarcata in scripturile speciala pentru miscari
+
 }
