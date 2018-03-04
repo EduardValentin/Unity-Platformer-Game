@@ -13,12 +13,16 @@ public class scriptGhem : MonoBehaviour {
     }
 
     // Update is called once per frame
+	bool direction = true;
     void Update()
     {
         if (Input.GetKeyDown("space") && mRbody.velocity == new Vector2(0, 0))
         {
-            mRbody.AddForce(new Vector2(300, 800));
+			if(direction)
+            	mRbody.AddForce(new Vector2(300, 800));
+			else
+				mRbody.AddForce(new Vector2(-300, 800));
+			direction = !direction;
         }
-
     }
 }
