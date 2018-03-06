@@ -2,13 +2,24 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class scriptObiect : MonoBehaviour {
+public abstract class scriptObiect : MonoBehaviour {
 
-    public float mDistance;         // Distanta traversata de obstacol in directie sus-jos
-    public float mViteza;           // Viteza cu care se misca
+    public float mDistance;           // Distanta traversata de obstacol in directie sus-jos
+    public float mViteza;             // Viteza cu care se misca
+    public Miscari mTipMiscare;
+
     protected int mDirectie;          // Directia in care se misca obstacolul. 1 = se misca in sus, -1 = se misca in jos
     protected Vector2 mPozitieStart;  // Pozitia initiala a obstacolului
 
+    public enum Miscari {
+        Vertical,
+        Orizontal,
+        DiagonalaPrincipala,
+        DiagonalaSecundara,
+        Circular
+    };
+
+    
     void Start()
     {
         mPozitieStart = transform.position;
@@ -22,7 +33,38 @@ public class scriptObiect : MonoBehaviour {
         mDirectie *= -1;
     }
 
-    virtual protected void doMovement() { }          // Trebuie supraincarcata in scripturile speciala pentru miscari
-    virtual protected void collisionAction() { }          // Trebuie supraincarcata in scripturile speciala pentru miscari
+    protected void doMovement() {
 
+        switch (mTipMiscare)
+        {
+            case Miscari.Vertical:
+            {
+                transform.position = new Vector3(transform.position.x, transform.position.y + mDirectie * mViteza * Time.deltaTime);
+                float traversed = Vector2.Distance(mPozitieStart, transform.position);
+                if (traversed >= mDistance)
+                    mDirectie *= -1;
+                break;
+            }
+            case Miscari.Orizontal:
+            {
+
+                    transform.position = new Vector3(transform.position.x + mDirectie * mViteza * Time.deltaTime, transform.position.y);
+                    float traversed = Vector2.Distance(mPozitieStart, transform.position);
+                    if (traversed >= mDistance)
+                        mDirectie *= -1;
+                    break;
+            }
+            default:
+            {
+                    break;
+            }
+        }
+    }
+
+    abstract protected void collisionAction(Collision2D col);         // Trebuie supraincarcata in scripturile speciala pentru miscari
+
+    public void OnCollisionEnter2D(Collision2D collision)
+    {
+        collisionAction(collision);
+    }
 }

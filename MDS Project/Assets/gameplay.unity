@@ -858,8 +858,8 @@ GameObject:
   m_Component:
   - component: {fileID: 790901251}
   - component: {fileID: 790901250}
-  - component: {fileID: 790901248}
   - component: {fileID: 790901249}
+  - component: {fileID: 790901248}
   - component: {fileID: 790901252}
   m_Layer: 0
   m_Name: Obstacol2
@@ -891,11 +891,12 @@ MonoBehaviour:
   m_GameObject: {fileID: 790901247}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: aaa4aa495fa9a45439109c1e494318d6, type: 3}
+  m_Script: {fileID: 11500000, guid: f0281f84b1c416f4da233fd9508c7d0a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  mDistance: 1.49
-  mViteza: 3.82
+  mDistance: 2.37
+  mViteza: 2
+  mTipMiscare: 1
 --- !u!212 &790901250
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -1131,11 +1132,12 @@ MonoBehaviour:
   m_GameObject: {fileID: 1035936682}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 001b5f634f1e3fa46aea218de8a9af42, type: 3}
+  m_Script: {fileID: 11500000, guid: f0281f84b1c416f4da233fd9508c7d0a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  mDistance: 1.6
-  mViteza: 2.46
+  mDistance: 1.36
+  mViteza: 1.08
+  mTipMiscare: 0
 --- !u!58 &1035936686
 CircleCollider2D:
   m_ObjectHideFlags: 0
