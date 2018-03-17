@@ -4,67 +4,67 @@ using UnityEngine;
 
 public abstract class scriptObiect : MonoBehaviour {
 
-    public float mDistance;           // Distanta traversata de obstacol in directie sus-jos
-    public float mViteza;             // Viteza cu care se misca
-    public Miscari mTipMiscare;
+    public float mDuratieTravers;
+    public float mTestDistance;
+    public float mWaitAfterTarget;
+    public Vector2 mTestDirection;
+    private Rigidbody2D mRigidBody2d;
+    private float mCounter;
+    private Vector2 mTargetPoint;
 
-    protected int mDirectie;          // Directia in care se misca obstacolul. 1 = se misca in sus, -1 = se misca in jos
-    protected Vector2 mPozitieStart;  // Pozitia initiala a obstacolului
-
-    public enum Miscari {
-        Vertical,
-        Orizontal,
-        DiagonalaPrincipala,
-        DiagonalaSecundara,
-        Circular
-    };
+    protected Vector2 mPozitieStart;        // Pozitia initiala a obstacolului
 
     
-    void Start()
+    protected virtual void Start()
     {
+        mTestDirection = mTestDirection.normalized;
+        mCounter = 0;
+        mRigidBody2d = GetComponent<Rigidbody2D>();
         mPozitieStart = transform.position;
-        int[] directii = new int[2] { -1, 1 };
-        int index = Random.Range(0, 1);
-        mDirectie = directii[index];
+        mTargetPoint = mPozitieStart + mTestDirection * mTestDistance;
+
+        StartCoroutine(moveLinear(mWaitAfterTarget));   // Incepe miscarea
+
     }
 
-    public void schimbaDirectie()
+
+    protected IEnumerator moveLinear(float waitDuration)
     {
-        mDirectie *= -1;
-    }
-
-    protected void doMovement() {
-
-        switch (mTipMiscare)
+        // Loops each cycles
+        while (Application.isPlaying)
         {
-            case Miscari.Vertical:
+            // First step, travel from A to B
+            float counter = 0f;
+            while (counter < mDuratieTravers)
             {
-                transform.position = new Vector3(transform.position.x, transform.position.y + mDirectie * mViteza * Time.deltaTime);
-                float traversed = Vector2.Distance(mPozitieStart, transform.position);
-                if (traversed >= mDistance)
-                    mDirectie *= -1;
-                break;
+                transform.position = Vector3.Lerp(mPozitieStart, mTargetPoint, counter / mDuratieTravers);
+                counter += Time.deltaTime;
+                yield return null;
             }
-            case Miscari.Orizontal:
-            {
 
-                    transform.position = new Vector3(transform.position.x + mDirectie * mViteza * Time.deltaTime, transform.position.y);
-                    float traversed = Vector2.Distance(mPozitieStart, transform.position);
-                    if (traversed >= mDistance)
-                        mDirectie *= -1;
-                    break;
-            }
-            default:
+            // Make sure you're exactly at B, in case the counter 
+            // wasn't precisely equal to travelDuration at the end
+            transform.position = mTargetPoint;
+
+            // Second step, wait
+            yield return new WaitForSeconds(waitDuration);
+
+            // Third step, travel back from B to A
+            counter = 0f;
+            while (counter < mDuratieTravers)
             {
-                    break;
+                transform.position = Vector3.Lerp(mTargetPoint, mPozitieStart, counter / mDuratieTravers);
+                counter += Time.deltaTime;
+                yield return null;
             }
+
+            transform.position = mPozitieStart;
+
+            // Finally, wait
+            yield return new WaitForSeconds(waitDuration);
         }
+
     }
 
-    abstract protected void collisionAction(Collision2D col);         // Trebuie supraincarcata in scripturile speciala pentru miscari
-
-    public void OnCollisionEnter2D(Collision2D collision)
-    {
-        collisionAction(collision);
-    }
+    abstract public void collisionAction(Collision2D col);         // Trebuie supraincarcata in scripturile speciala pentru miscari
 }
