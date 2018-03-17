@@ -1095,7 +1095,7 @@ Canvas:
   m_AdditionalShaderChannelsFlag: 0
   m_SortingLayerID: 0
   m_SortingOrder: 0
-  m_TargetDisplay: 0
+  m_TargetDisplay: 1
 --- !u!224 &525152139
 RectTransform:
   m_ObjectHideFlags: 0
@@ -1534,10 +1534,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f0281f84b1c416f4da233fd9508c7d0a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+<<<<<<< HEAD
   mDuratieTravers: 1
   mTestDistance: 5
   mWaitAfterTarget: 0
   mTestDirection: {x: 0, y: -1}
+=======
+  mDistance: 1
+  mViteza: 1.91
+  mTipMiscare: 1
+>>>>>>> 4426f7093cb9e44211265742e4e45a05cb314a40
 --- !u!212 &790901250
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -2683,7 +2689,7 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 1
-  m_Sprite: {fileID: 21300000, guid: 1fdc1f0f1a0cb8644ab9621500978910, type: 3}
+  m_Sprite: {fileID: 21300000, guid: f1f9fc88a084b1944abe93743446a2ed, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
