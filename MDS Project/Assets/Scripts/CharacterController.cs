@@ -23,7 +23,6 @@ public class CharacterController : MonoBehaviour
 
     void FixedUpdate()
     {
-
         if (!mJumpReady)
         {
             // Cand ghemotocul e in aer crestem la fiecare frame scorul cu 1
@@ -55,9 +54,11 @@ public class CharacterController : MonoBehaviour
         if (collision.gameObject.tag == "Perete")
         {
             mJumpReady = true;
-
-            this.gameObject.AddComponent<FixedJoint2D>();
-            this.gameObject.GetComponent<FixedJoint2D>().connectedBody = collision.rigidbody;
+            if (this.gameObject.GetComponent<FixedJoint2D>() == null)
+            {
+                this.gameObject.AddComponent<FixedJoint2D>();
+                this.gameObject.GetComponent<FixedJoint2D>().connectedBody = collision.rigidbody;
+            }
         }
         else if (collision.gameObject.tag == "Obstacol")
         {

@@ -7,11 +7,10 @@ public class CameraController : MonoBehaviour {
     private Vector3 mOffset;
     public float mSmoothTime = 0.3F;
     private Vector3 mVelocity = Vector3.zero;
-    private GameManager mGameManager;
+
 
     // Use this for initialization
     void Start () {
-        mGameManager = GameObject.FindGameObjectWithTag("GameManager").GetComponent<GameManager>();
         mCharacterTransform = GameObject.FindGameObjectWithTag("Player").transform;
     }
 

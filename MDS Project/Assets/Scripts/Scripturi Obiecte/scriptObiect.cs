@@ -8,8 +8,6 @@ public abstract class scriptObiect : MonoBehaviour {
     public float mTestDistance;
     public float mWaitAfterTarget;
     public Vector2 mTestDirection;
-    private Rigidbody2D mRigidBody2d;
-    private float mCounter;
     private Vector2 mTargetPoint;
 
     protected Vector2 mPozitieStart;        // Pozitia initiala a obstacolului
@@ -18,8 +16,6 @@ public abstract class scriptObiect : MonoBehaviour {
     protected virtual void Start()
     {
         mTestDirection = mTestDirection.normalized;
-        mCounter = 0;
-        mRigidBody2d = GetComponent<Rigidbody2D>();
         mPozitieStart = transform.position;
         mTargetPoint = mPozitieStart + mTestDirection * mTestDistance;
 
