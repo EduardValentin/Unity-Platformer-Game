@@ -7,21 +7,24 @@ public class CharacterController : MonoBehaviour
 
     private Rigidbody2D mRbody;
     private bool mJumpReady;
-    private bool mDirection;
+    private int mDirection;
     private int mScore;
     private GameManager mGameManager;
+    [HideInInspector]
+    public bool mJumpedOnce;
 
     void Start()
     {
+        mJumpedOnce = false;
         mGameManager = GameObject.FindGameObjectWithTag("GameManager").GetComponent<GameManager>();
         mRbody = GetComponent<Rigidbody2D>();
         mJumpReady = true;
-        mDirection = true;
+        mDirection = 1;
         mScore = 0;
 
     }
 
-    void FixedUpdate()
+    void Update()
     {
         if (!mJumpReady)
         {
@@ -33,6 +36,7 @@ public class CharacterController : MonoBehaviour
                 mGameManager.UpdateScore(mScore);
         }
 
+        print(mJumpReady);
         if (mJumpReady == true && Input.GetKeyDown("space"))
         {
             mJumpReady = false;
@@ -40,19 +44,22 @@ public class CharacterController : MonoBehaviour
             if (this.GetComponent<FixedJoint2D>() != null)
                 Destroy(this.GetComponent<FixedJoint2D>());
 
-            if (mDirection)
-                mRbody.AddForce(new Vector2(600, 800));
-            else
-                mRbody.AddForce(new Vector2(-600, 800));
+            mRbody.AddForce(new Vector2(600 * mDirection, 800));
 
-            mDirection = !mDirection;
+            if (mDirection == 1)
+                mDirection = -1;
+            else
+                mDirection = 1;
         }
     }
 
     public void OnCollisionEnter2D(Collision2D collision)
     {
+
         if (collision.gameObject.tag == "Perete")
         {
+            mJumpedOnce = true;
+
             mJumpReady = true;
             if (this.gameObject.GetComponent<FixedJoint2D>() == null)
             {
@@ -60,7 +67,7 @@ public class CharacterController : MonoBehaviour
                 this.gameObject.GetComponent<FixedJoint2D>().connectedBody = collision.rigidbody;
             }
         }
-        else if (collision.gameObject.tag == "Obstacol")
+        else if (collision.gameObject.tag == "Obstacol" || collision.gameObject.tag == "GarbageCollector")
         {
             // ey game is over
             mGameManager.GameOver();
