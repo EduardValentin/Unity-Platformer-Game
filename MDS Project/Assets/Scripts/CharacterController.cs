@@ -43,7 +43,7 @@ public class CharacterController : MonoBehaviour
             if (this.GetComponent<FixedJoint2D>() != null)
                 Destroy(this.GetComponent<FixedJoint2D>());
 
-            mRbody.AddForce(new Vector2(600 * mDirection, 800));
+            mRbody.AddForce(new Vector2(1100 * mDirection, 950));
 
             if (mDirection == 1)
                 mDirection = -1;
