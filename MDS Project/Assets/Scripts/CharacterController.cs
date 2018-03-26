@@ -36,7 +36,6 @@ public class CharacterController : MonoBehaviour
                 mGameManager.UpdateScore(mScore);
         }
 
-        print(mJumpReady);
         if (mJumpReady == true && Input.GetKeyDown("space"))
         {
             mJumpReady = false;
