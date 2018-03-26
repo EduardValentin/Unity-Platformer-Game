@@ -13,7 +13,7 @@ public class CameraController : MonoBehaviour {
     private void Start () {
 
         mCharacter = GameObject.FindGameObjectWithTag("Player");
-        mCharacterController.GameObject.GetComponent<CharacterController>();
+		mCharacterController = mCharacter.GetComponent<CharacterController>();
 
     }
 
