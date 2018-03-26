@@ -4,40 +4,39 @@ using UnityEngine;
 
 public class CameraController : MonoBehaviour {
     private GameObject mCharacter;
-   // private Vector3 mOffset;
-    public float mSmoothTime = 0.3F;
-    //private Vector3 mVelocity = Vector3.zero;
-
-    // --
-    public float mFollowFactor;
-    public Vector3 mOffset;
+    private CharacterController mCharacterController;
     private Vector3 mLowerLimit;
-    public float mDificultyScale = 1;
+    public Vector3 mOffset;
+    public float mDificultyScale;
 
     // Use this for initialization
-    void Start () {
+    private void Start () {
 
         mCharacter = GameObject.FindGameObjectWithTag("Player");
+        mCharacterController.GameObject.GetComponent<CharacterController>();
+
     }
 
-    void Update()
+    private float ComputeCameraSpeed(float x) 
     {
-        /*
-        Vector3 targetPosition = mCharacterTransform.TransformPoint(new Vector3(0, 5, -10));
-        targetPosition.x = 0;
-        targetPosition.z = transform.position.z;
-        transform.position = Vector3.SmoothDamp(transform.position, targetPosition, ref mVelocity, mSmoothTime);*/
-        if(mCharacter.GetComponent<CharacterController>().mJumpedOnce)
+		// primeste ca input distanta dintre limita inferioara si player si returneaza viteza cu care camera se ridica.
+        float rvalue = 1;	// valoarea returnata, 1 = nu are nici un efect.
+       	
+        if (x > Mathf.Epsilon)	// daca distanta e foarte aproape de limita inferioara camera se ridica cu viteza implicita  
         {
-            mLowerLimit = transform.position + mOffset;
-
-            float difference = mCharacter.transform.position.y - mLowerLimit.y;
-
-            float factor = 1;
-            if (difference > 0) 
-                factor = (Mathf.Pow(2.14f,(difference / 2.3f)));
-            transform.position += Vector3.up * Time.deltaTime * factor * mDificultyScale;
+        	rvalue = Mathf.Pow(2.14f,(x / 2.3f));	// functie exponentiala ce are graficul asemanator cu e^x
         }
 
+        return rvalue;
+    }
+
+    private void Update()
+    {
+        mLowerLimit = transform.position + mOffset;
+        if(mCharacter.GetComponent<CharacterController>().mJumpedOnce)
+        {
+           
+            transform.position += Vector3.up * Time.deltaTime  * mDificultyScale * ComputeCameraSpeed(mCharacter.transform.position.y - mLowerLimit.y);
+        }
     }
 }
