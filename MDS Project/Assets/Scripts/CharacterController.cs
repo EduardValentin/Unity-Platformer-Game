@@ -52,6 +52,15 @@ public class CharacterController : MonoBehaviour
         }
     }
 
+    public bool isInAir()
+    {
+        if (!mJumpReady)
+        {
+            return true;
+        }
+        return false;
+    }
+
     public void OnCollisionEnter2D(Collision2D collision)
     {
 

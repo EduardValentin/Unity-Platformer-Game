@@ -10,9 +10,10 @@ public class GameManager : MonoBehaviour {
     public bool mGameIsOver;
     public Text mScoreText;
     private bool mGameIsPaused;
-
-    private void Start()
-    {
+    public Button mPlayButton;
+    private void Start() { 
+        Time.timeScale = 1f;
+        mPlayButton.onClick.AddListener(RestartGame);
         mGameIsPaused = false;
         mScoreText.text = "Score: " + 0;
         mGameIsOver = false;
@@ -31,9 +32,16 @@ public class GameManager : MonoBehaviour {
     {
         mScoreText.text = "Score: " + val;
     }
+
+    public void RestartGame()
+    {
+        Application.LoadLevel(Application.loadedLevel);
+    }
+
     public void GameOver()
     {
         // do some score saving
+        PauseGame();
         mGameOverPanel.SetActive(true);
         mGameIsOver = true;
     }
@@ -44,9 +52,11 @@ public class GameManager : MonoBehaviour {
     public void PauseGame()
     {
         mGameIsPaused = true;
+        Time.timeScale = 0;
     }
     public void ResumeGame()
     {
+        Time.timeScale = 1;
         mGameIsPaused = false;
     }
 }

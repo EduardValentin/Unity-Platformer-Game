@@ -143,6 +143,7 @@ MonoBehaviour:
   mGameOverPanel: {fileID: 348566931}
   mGameIsOver: 0
   mScoreText: {fileID: 1331020803}
+  mPlayButton: {fileID: 1488869587}
 --- !u!4 &91238820
 Transform:
   m_ObjectHideFlags: 0
@@ -1774,6 +1775,53 @@ CanvasRenderer:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 1331020801}
+--- !u!1 &1488869585 stripped
+GameObject:
+  m_PrefabParentObject: {fileID: 1203880193614826, guid: 025905821333cad4cba15d11b47432f0,
+    type: 2}
+  m_PrefabInternal: {fileID: 2123182362}
+--- !u!114 &1488869587 stripped
+MonoBehaviour:
+  m_PrefabParentObject: {fileID: 114264878235689844, guid: 025905821333cad4cba15d11b47432f0,
+    type: 2}
+  m_PrefabInternal: {fileID: 2123182362}
+  m_Script: {fileID: 1392445389, guid: f5f67c52d1564df4a8936ccd202a3bd8, type: 3}
+--- !u!114 &1488869590
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1488869585}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 1301386320, guid: f70555f144d8491a825f0804e09c671c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_IgnoreReversedGraphics: 1
+  m_BlockingObjects: 0
+  m_BlockingMask:
+    serializedVersion: 2
+    m_Bits: 4294967295
+--- !u!223 &1488869591
+Canvas:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1488869585}
+  m_Enabled: 1
+  serializedVersion: 3
+  m_RenderMode: 2
+  m_Camera: {fileID: 0}
+  m_PlaneDistance: 100
+  m_PixelPerfect: 0
+  m_ReceivesEvents: 1
+  m_OverrideSorting: 0
+  m_OverridePixelPerfect: 0
+  m_SortingBucketNormalizedSize: 0
+  m_AdditionalShaderChannelsFlag: 0
+  m_SortingLayerID: 0
+  m_SortingOrder: 0
+  m_TargetDisplay: 0
 --- !u!1 &1536607977
 GameObject:
   m_ObjectHideFlags: 0
@@ -2420,8 +2468,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 53e66c3f3ee17e946a9e60f7d669a752, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  mOffset: {x: 0, y: -4, z: 0}
-  mDificultyScale: 0.7
+  mOffset: {x: 0, y: -2, z: 0}
+  mDificultyScale: 1.2
 --- !u!1 &1911308520
 GameObject:
   m_ObjectHideFlags: 0
@@ -2609,6 +2657,11 @@ Prefab:
   m_Modification:
     m_TransformParent: {fileID: 525152139}
     m_Modifications:
+    - target: {fileID: 114264878235689844, guid: 025905821333cad4cba15d11b47432f0,
+        type: 2}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.size
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 224699595211111956, guid: 025905821333cad4cba15d11b47432f0,
         type: 2}
       propertyPath: m_LocalPosition.x
@@ -2698,6 +2751,31 @@ Prefab:
         type: 2}
       propertyPath: m_Pivot.y
       value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 114264878235689844, guid: 025905821333cad4cba15d11b47432f0,
+        type: 2}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Mode
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 114264878235689844, guid: 025905821333cad4cba15d11b47432f0,
+        type: 2}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_CallState
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 114264878235689844, guid: 025905821333cad4cba15d11b47432f0,
+        type: 2}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
+      value: 
+      objectReference: {fileID: 91238819}
+    - target: {fileID: 114264878235689844, guid: 025905821333cad4cba15d11b47432f0,
+        type: 2}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
+      value: RestartGame
+      objectReference: {fileID: 0}
+    - target: {fileID: 114264878235689844, guid: 025905821333cad4cba15d11b47432f0,
+        type: 2}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_ObjectArgumentAssemblyTypeName
+      value: UnityEngine.Object, UnityEngine
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 025905821333cad4cba15d11b47432f0, type: 2}
