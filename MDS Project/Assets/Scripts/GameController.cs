@@ -12,20 +12,42 @@ public class GameController : MonoBehaviour
     public Text mScoreText;
     private bool mGameIsPaused;
     public Button mPlayButton;
+    private float mScreenHeight;
+    public float mWallSize;
+
     private void Start()
     {
+
         Time.timeScale = 1f;
         mPlayButton.onClick.AddListener(RestartGame);
         mGameIsPaused = false;
         mScoreText.text = "Score: " + 0;
         mGameIsOver = false;
         mGameOverPanel.SetActive(false);
-    }
-    public void SpawnWalls(GameObject rwalls, float size)
-    {
-        Instantiate(rwalls, rwalls.transform.position + new Vector3(0, size, 0), rwalls.transform.rotation);
-    }
 
+        // Se calculeaza inaltimea ecranului
+        Vector2 topRightCorner = new Vector2(1, 1);
+        Vector2 edgeVector = Camera.main.ViewportToWorldPoint(topRightCorner);  // Contine coordonatele coltului dreapta-sus al ecranului in starea initiala
+        mScreenHeight = edgeVector.y * 2;
+        /*
+        GameObject[] arrWalls = GameObject.FindGameObjectsWithTag("Perete");
+        for (int i = 0; i < arrWalls.Length; i++)
+        {
+            arrWalls[i].transform.localScale = new Vector3(mWallSize, mScreenHeight);
+        }
+        print(mScreenHeight);
+        */
+
+
+    }
+    public void SpawnWalls(GameObject cloneWalls, float size)
+    {
+        Instantiate(cloneWalls, cloneWalls.transform.position + new Vector3(0, size, 0), cloneWalls.transform.rotation);
+    }
+    public void SpawnObstacles(GameObject cloneObstacle, int numberOfObstacles,Vector2 origin)
+    {
+        // Spawn a set of obstacles at the screen with origin given
+    }
     private void Update()
     {
 
@@ -50,6 +72,10 @@ public class GameController : MonoBehaviour
     public bool GameIsPaused()
     {
         return mGameIsPaused;
+    }
+    public float GetScreenHeight()
+    {
+        return mScreenHeight;
     }
     public void PauseGame()
     {
