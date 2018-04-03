@@ -2,26 +2,26 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class CharacterController : MonoBehaviour
+public class PlayerController : MonoBehaviour
 {
-
+    private GameController mGameController;
+    public GameObject mGameControllerObj;
+    public float mStickiness;
     private Rigidbody2D mRbody;
     private bool mJumpReady;
     private int mDirection;
     private int mScore;
-    private GameManager mGameManager;
     [HideInInspector]
     public bool mJumpedOnce;
 
     void Start()
     {
         mJumpedOnce = false;
-        mGameManager = GameObject.FindGameObjectWithTag("GameManager").GetComponent<GameManager>();
         mRbody = GetComponent<Rigidbody2D>();
         mJumpReady = true;
         mDirection = 1;
         mScore = 0;
-
+        mGameController = mGameControllerObj.GetComponent<GameController>();
     }
 
     void Update()
@@ -32,17 +32,25 @@ public class CharacterController : MonoBehaviour
             // Daca ghemotocul stationeaza , scorul nu creste
 
             mScore += 1;
-            if (!mGameManager.mGameIsOver)
-                mGameManager.UpdateScore(mScore);
+            if (!mGameController.mGameIsOver)
+                mGameController.UpdateScore(mScore);
+        }
+        else
+        {
+            
+            if (mJumpedOnce)
+            {
+                // Daca playerul a sarit macar o data si se afla pe perete
+
+                Vector2 direction = new Vector2(mDirection * -1, 0);
+                mRbody.AddForce(direction * mStickiness);
+            }
         }
 
         if (mJumpReady == true && Input.GetKeyDown("space"))
         {
+
             mJumpReady = false;
-
-            if (this.GetComponent<FixedJoint2D>() != null)
-                Destroy(this.GetComponent<FixedJoint2D>());
-
             mRbody.AddForce(new Vector2(1100 * mDirection, 950));
 
             if (mDirection == 1)
@@ -51,6 +59,7 @@ public class CharacterController : MonoBehaviour
                 mDirection = 1;
         }
     }
+
 
     public bool isInAir()
     {
@@ -67,18 +76,13 @@ public class CharacterController : MonoBehaviour
         if (collision.gameObject.tag == "Perete")
         {
             mJumpedOnce = true;
-
             mJumpReady = true;
-            if (this.gameObject.GetComponent<FixedJoint2D>() == null)
-            {
-                this.gameObject.AddComponent<FixedJoint2D>();
-                this.gameObject.GetComponent<FixedJoint2D>().connectedBody = collision.rigidbody;
-            }
+
         }
         else if (collision.gameObject.tag == "Obstacol" || collision.gameObject.tag == "GarbageCollector")
         {
             // ey game is over
-            mGameManager.GameOver();
+            mGameController.GameOver();
         }
 
     }

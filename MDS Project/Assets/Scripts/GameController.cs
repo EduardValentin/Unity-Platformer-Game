@@ -3,7 +3,8 @@ using System.Collections.Generic;
 using UnityEngine.UI;
 using UnityEngine;
 
-public class GameManager : MonoBehaviour {
+public class GameController : MonoBehaviour
+{
     //public GameObject mBackground;
     //public GameObject mCharacter;
     public GameObject mGameOverPanel;
@@ -11,7 +12,8 @@ public class GameManager : MonoBehaviour {
     public Text mScoreText;
     private bool mGameIsPaused;
     public Button mPlayButton;
-    private void Start() { 
+    private void Start()
+    {
         Time.timeScale = 1f;
         mPlayButton.onClick.AddListener(RestartGame);
         mGameIsPaused = false;
@@ -19,14 +21,14 @@ public class GameManager : MonoBehaviour {
         mGameIsOver = false;
         mGameOverPanel.SetActive(false);
     }
-    public void SpawnWalls(GameObject rwalls,float size)
+    public void SpawnWalls(GameObject rwalls, float size)
     {
         Instantiate(rwalls, rwalls.transform.position + new Vector3(0, size, 0), rwalls.transform.rotation);
     }
 
     private void Update()
     {
-        
+
     }
     public void UpdateScore(int val)
     {
