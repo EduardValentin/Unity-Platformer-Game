@@ -13,28 +13,32 @@ public class PlayerController : MonoBehaviour
     private int mScore;
     [HideInInspector]
     public bool mJumpedOnce;
+	public int mHighestPoint;
 
     void Start()
     {
+		mHighestPoint = (int)transform.position.y;
         mJumpedOnce = false;
         mRbody = GetComponent<Rigidbody2D>();
         mJumpReady = true;
         mDirection = 1;
-        mScore = 0;
         mGameController = mGameControllerObj.GetComponent<GameController>();
     }
 
     void Update()
     {
+
         if (!mJumpReady)
         {
             // Cand ghemotocul e in aer crestem la fiecare frame scorul cu 1
             // Daca ghemotocul stationeaza , scorul nu creste
-
-            mScore += 1;
-            if (!mGameController.mGameIsOver)
-                mGameController.UpdateScore(mScore);
-        }
+			if ((int)transform.position.y + 0.5 > mHighestPoint && !mGameController.mGameIsOver)
+			{
+                mGameController.UpdateScoreView();
+			
+				mHighestPoint = (int)transform.position.y;
+			}
+		}
         else
         {
             

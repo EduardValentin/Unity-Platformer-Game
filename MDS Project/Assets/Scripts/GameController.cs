@@ -2,6 +2,10 @@
 using System.Collections.Generic;
 using UnityEngine.UI;
 using UnityEngine;
+using UnityEditor;
+using System;
+using System.Xml;
+using UnityEngine.SceneManagement;
 
 public class GameController : MonoBehaviour
 {
@@ -14,9 +18,28 @@ public class GameController : MonoBehaviour
     public Button mPlayButton;
     private float mScreenHeight;
     public float mWallSize;
+	private ScoreModel mHighestScore;
+    private int mScore;
+	private XmlDocument mScoreHistoryDB;
+	public Text mHighestScoreText;
+	public Text mLastScoreText;
+
 
     private void Start()
     {
+		mScoreHistoryDB = new XmlDocument ();
+		mScoreHistoryDB.Load ("Assets/Scripts/XML/ScoreHistory.xml");	// Get the xml file content
+
+		int maxim = 0;
+		XmlNodeList xmlElements = mScoreHistoryDB.GetElementsByTagName ("value");
+		for (int i = 0;i<xmlElements.Count;i++)
+		{
+			int val = Int32.Parse (xmlElements[i].InnerText);
+			if (maxim < val) {
+				maxim = val;
+			}
+		}
+		mHighestScore = new ScoreModel (maxim, "dontcare");
 
         Time.timeScale = 1f;
         mPlayButton.onClick.AddListener(RestartGame);
@@ -29,15 +52,6 @@ public class GameController : MonoBehaviour
         Vector2 topRightCorner = new Vector2(1, 1);
         Vector2 edgeVector = Camera.main.ViewportToWorldPoint(topRightCorner);  // Contine coordonatele coltului dreapta-sus al ecranului in starea initiala
         mScreenHeight = edgeVector.y * 2;
-        /*
-        GameObject[] arrWalls = GameObject.FindGameObjectsWithTag("Perete");
-        for (int i = 0; i < arrWalls.Length; i++)
-        {
-            arrWalls[i].transform.localScale = new Vector3(mWallSize, mScreenHeight);
-        }
-        print(mScreenHeight);
-        */
-
 
     }
     public void SpawnWalls(GameObject cloneWalls, float size)
@@ -48,26 +62,48 @@ public class GameController : MonoBehaviour
     {
         // Spawn a set of obstacles at the screen with origin given
     }
-    private void Update()
+    public void UpdateScoreView()
     {
-
-    }
-    public void UpdateScore(int val)
-    {
-        mScoreText.text = "Score: " + val;
+		mScore +=1;
+        mScoreText.text = "Score: " + mScore;
     }
 
     public void RestartGame()
     {
-        Application.LoadLevel(Application.loadedLevel);
+		SceneManager.LoadScene("gameplay", LoadSceneMode.Single);
     }
 
     public void GameOver()
     {
-        // do some score saving
-        PauseGame();
+		if( mHighestScore.getScore() < mScore)
+		{
+			mHighestScore = new ScoreModel(mScore,DateTime.Now.ToString("MM/dd/yyyy"));
+
+			// Insert to database
+
+			mScoreHistoryDB = new XmlDocument ();
+			mScoreHistoryDB.Load ("Assets/Scripts/XML/ScoreHistory.xml");	// Get the xml file content
+
+			XmlElement xmlbase = mScoreHistoryDB.DocumentElement;
+			XmlElement scoreElement =  mScoreHistoryDB.CreateElement ("score");
+			XmlElement scoreValue = mScoreHistoryDB.CreateElement ("value");
+			scoreValue.InnerText = mHighestScore.getScore().ToString();
+			XmlElement scoreDate = mScoreHistoryDB.CreateElement ("date");
+			scoreDate.InnerText = mHighestScore.getDate ();
+			scoreElement.AppendChild (scoreValue);
+			scoreElement.AppendChild (scoreDate);
+			xmlbase.AppendChild (scoreElement);
+		
+			mScoreHistoryDB.Save("Assets/Scripts/XML/ScoreHistory.xml");
+		}		
+
+		mHighestScoreText.text = "Highest Score: " + mHighestScore.getScore();
+		mLastScoreText.text = "Latest Score: " + mScore;
+
+		PauseGame();
         mGameOverPanel.SetActive(true);
         mGameIsOver = true;
+
     }
     public bool GameIsPaused()
     {
