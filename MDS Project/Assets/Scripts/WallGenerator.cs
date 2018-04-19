@@ -17,7 +17,7 @@ public class WallGenerator : MonoBehaviour {
         if(collision.gameObject.name == "Spawner")
         {
             mGameControllerScript.SpawnWalls(this.gameObject.transform.parent.gameObject, mGameControllerScript.GetScreenHeight());   // Spawn pereti noi
-
+            //mGameControllerScript.SpawnWalls()
         }
     }
 }
