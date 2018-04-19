@@ -3,18 +3,13 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class CameraController : MonoBehaviour {
-    private GameObject mCharacter;
-    private CharacterController mCharacterController;
+    public GameObject mCharacter;
     private Vector3 mLowerLimit;
     public Vector3 mOffset;
     public float mDificultyScale;
 
     // Use this for initialization
     private void Start () {
-
-        mCharacter = GameObject.FindGameObjectWithTag("Player");
-		mCharacterController = mCharacter.GetComponent<CharacterController>();
-
     }
 
     private float ComputeCameraSpeed(float x) 
@@ -33,7 +28,7 @@ public class CameraController : MonoBehaviour {
     private void Update()
     {
         mLowerLimit = transform.position + mOffset;
-        if(mCharacter.GetComponent<CharacterController>().mJumpedOnce)
+        if(mCharacter.GetComponent<PlayerController>().mJumpedOnce)
         {
            
             transform.position += Vector3.up * Time.deltaTime  * mDificultyScale * ComputeCameraSpeed(mCharacter.transform.position.y - mLowerLimit.y);
