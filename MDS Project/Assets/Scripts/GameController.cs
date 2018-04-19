@@ -56,10 +56,6 @@ public class GameController : MonoBehaviour
     public void SpawnObstacles(GameObject cloneObstacle, int numberOfObstacles,Vector2 origin)
     {
         // Spawn a set of obstacles at the screen with origin given
-<<<<<<< HEAD
-       
-=======
->>>>>>> 1ed070d769562738ba124aa9f6fdf5acacd01357
     }
     public void UpdateScoreView()
     {
