@@ -30,8 +30,10 @@ public class GameController : MonoBehaviour
 		mScoreHistoryDB = new XmlDocument ();
 		mScoreHistoryDB.Load ("Assets/Scripts/XML/ScoreHistory.xml");	// Get the xml file content
 
+
 		XmlNodeList xmlElements = mScoreHistoryDB.GetElementsByTagName ("value");
         int maxim = Int32.Parse(xmlElements[xmlElements.Count - 1].InnerText);
+        
 		mHighestScore = new ScoreModel (maxim, "dontcare");
 
         Time.timeScale = 1f;
@@ -54,7 +56,10 @@ public class GameController : MonoBehaviour
     public void SpawnObstacles(GameObject cloneObstacle, int numberOfObstacles,Vector2 origin)
     {
         // Spawn a set of obstacles at the screen with origin given
+<<<<<<< HEAD
        
+=======
+>>>>>>> 1ed070d769562738ba124aa9f6fdf5acacd01357
     }
     public void UpdateScoreView()
     {
