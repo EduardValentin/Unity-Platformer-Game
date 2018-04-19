@@ -5,20 +5,19 @@ using UnityEngine;
 public abstract class scriptObiect : MonoBehaviour {
 
     public float mDuratieTravers;
-    public float mTestDistance;
+    public float mDistance;
     public float mWaitAfterTarget;
-    public Vector2 mTestDirection;
-    private Vector2 mTargetPoint;
+    public Vector2 mDirection;
+    public Vector2 mTargetPoint;
 
-    protected Vector2 mPozitieStart;        // Pozitia initiala a obstacolului
+    public Vector2 mPozitieStart;        // Pozitia initiala a obstacolului
 
     
     protected virtual void Start()
     {
-        mTestDirection = mTestDirection.normalized;
+        mDirection = mDirection.normalized;
         mPozitieStart = transform.position;
-        mTargetPoint = mPozitieStart + mTestDirection * mTestDistance;
-
+        ComputeTargetPoint(mPozitieStart,mDirection,mDistance); 
         StartCoroutine(moveLinear(mWaitAfterTarget));   // Incepe miscarea
 
     }
@@ -60,6 +59,20 @@ public abstract class scriptObiect : MonoBehaviour {
             yield return new WaitForSeconds(waitDuration);
         }
 
+    }
+
+    public void SetAndComputeProperties(Vector2 newDirection,Vector2 newStartPosition,float duration,float newDistance)
+    {
+        this.mDirection = newDirection;
+        this.mPozitieStart = newStartPosition;
+        this.mDistance = newDistance;
+        this.mDuratieTravers = duration;
+
+        this.mTargetPoint = ComputeTargetPoint(mPozitieStart, mDirection, mDistance);
+    }
+    public static Vector2 ComputeTargetPoint(Vector2 from,Vector2 direction, float distance)
+    {
+        return  from + direction * distance;
     }
 
     abstract public void collisionAction(Collision2D col);         // Trebuie supraincarcata in scripturile speciala pentru miscari

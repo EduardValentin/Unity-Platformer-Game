@@ -27,7 +27,6 @@ public class PlayerController : MonoBehaviour
 
     void Update()
     {
-
         if (!mJumpReady)
         {
             // Cand ghemotocul e in aer crestem la fiecare frame scorul cu 1
@@ -77,7 +76,7 @@ public class PlayerController : MonoBehaviour
     public void OnCollisionEnter2D(Collision2D collision)
     {
 
-        if (collision.gameObject.tag == "Perete")
+        if (collision.gameObject.tag == "PereteStangaBase" || collision.gameObject.tag == "Perete" || collision.gameObject.tag == "PereteDreaptaBase")
         {
             mJumpedOnce = true;
             mJumpReady = true;

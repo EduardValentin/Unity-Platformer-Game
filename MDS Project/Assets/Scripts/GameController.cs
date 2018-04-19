@@ -12,22 +12,33 @@ public class GameController : MonoBehaviour
     //public GameObject mBackground;
     //public GameObject mCharacter;
     public GameObject mGameOverPanel;
+    public GameObject mCamera;
     public bool mGameIsOver;
     public Text mScoreText;
-    private bool mGameIsPaused;
     public Button mPlayButton;
-    private float mScreenHeight;
-    public float mWallSize;
-	private ScoreModel mHighestScore;
-    private int mScore;
-	private XmlDocument mScoreHistoryDB;
 	public Text mHighestScoreText;
 	public Text mLastScoreText;
 
+    private int mScore;
+    private float mScreenHeight;
+    private bool mGameIsPaused;
+    private ScoreModel mHighestScore;
+    private XmlDocument mScoreHistoryDB;
+    private GameObject mLeftWallBase;
+    private GameObject mRightWallBase;
+    private Vector3 mWallBoundsSize;
+    private GameObject mCloneObstacle;
+    private Vector2[] mDirections = { new Vector2(1, 0), new Vector2(-1, 0), new Vector2(0, 1), new Vector2(0, -1), new Vector2(1, 1), new Vector2(-1, -1), new Vector2(1, -1), new Vector2(-1, 1) };
 
     private void Start()
     {
-		mScoreHistoryDB = new XmlDocument ();
+        mCloneObstacle = GameObject.FindGameObjectWithTag("ClonaObstacol");
+
+        mLeftWallBase = GameObject.FindGameObjectWithTag("PereteStangaBase");
+        mRightWallBase = GameObject.FindGameObjectWithTag("PereteDreaptaBase");
+        mWallBoundsSize = mLeftWallBase.GetComponent<BoxCollider2D>().bounds.size;  // .x = width , .y = height, .z = depth of the gameobject
+
+        mScoreHistoryDB = new XmlDocument ();
 		mScoreHistoryDB.Load ("Assets/Scripts/XML/ScoreHistory.xml");	// Get the xml file content
 
 
@@ -53,9 +64,37 @@ public class GameController : MonoBehaviour
     {
         Instantiate(cloneWalls, cloneWalls.transform.position + new Vector3(0, size, 0), cloneWalls.transform.rotation);
     }
-    public void SpawnObstacles(GameObject cloneObstacle, int numberOfObstacles,Vector2 origin)
+    public void SpawnMovingOneObstacleAtOrigin(Vector3 origin)
     {
-        // Spawn a set of obstacles at the screen with origin given
+        //print("screen origin at" + origin);
+        float offsetFromWallOrigin = mWallBoundsSize.x / 2 + 1;
+        float offsetFromCameraOrigin = mScreenHeight / 2 - 1;
+
+        float xrand = UnityEngine.Random.Range(mLeftWallBase.transform.position.x + offsetFromWallOrigin, mRightWallBase.transform.position.x - offsetFromWallOrigin);
+        float yrand = UnityEngine.Random.Range(origin.y - offsetFromCameraOrigin, origin.y + offsetFromCameraOrigin);
+        float speedRand = UnityEngine.Random.Range(1, 2);
+
+        int chosenDirection = UnityEngine.Random.Range(0, mDirections.Length-1);
+
+        Vector2 targetPoint = scriptObiect.ComputeTargetPoint(origin, mDirections[chosenDirection].normalized, 2);
+        Vector2 obstacleOrigin = new Vector2(xrand, yrand);
+
+        RaycastHit2D hit = Physics2D.Raycast(obstacleOrigin,mDirections[chosenDirection],2);
+
+      //  Ray horizontalRay = new Ray(obstacleOrigin, mDirections[chosenDirection]);
+        if (hit && hit.transform.gameObject.tag == "Perete" && hit.distance < Vector2.Distance(obstacleOrigin, targetPoint))
+        {
+            print("I will adjust");
+            // need to adjust
+            float difference = Vector2.Distance(obstacleOrigin, targetPoint) - hit.distance + 2;
+            obstacleOrigin = obstacleOrigin - (mDirections[chosenDirection].normalized * difference);
+        } 
+  
+        GameObject newObstacle = Instantiate(mCloneObstacle,obstacleOrigin, mCloneObstacle.transform.rotation);
+        newObstacle.GetComponent<scriptObstacol>().SetAndComputeProperties(mDirections[chosenDirection],newObstacle.transform.position,speedRand,2);
+        newObstacle.gameObject.tag = "Obstacol";
+        //print("spawning new obstacle at " + newObstacle.GetComponent<scriptObstacol>().mPozitieStart );
+
     }
     public void UpdateScoreView()
     {
