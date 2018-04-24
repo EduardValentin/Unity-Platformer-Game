@@ -125,7 +125,7 @@ public class GameController : MonoBehaviour
         } else if (withDirection == new Vector2(0,-1))
         {
             choseAxis = 2;
-            ypos = UnityEngine.Random.Range(screenTopMarginY, screenTopMarginY + thirdPercentHeight);
+            ypos = UnityEngine.Random.Range(screenTopMarginY, screenTopMarginY - thirdPercentHeight);
         } else if (withDirection == new Vector2(1,0))
         {
             // se duce in dreapta
@@ -152,7 +152,7 @@ public class GameController : MonoBehaviour
 
             choseAxis = 0;
             xpos = UnityEngine.Random.Range(screenLeftMarginX, screenLeftMarginX + thirdPercentWidth);
-            ypos = UnityEngine.Random.Range(screenTopMarginY, screenTopMarginY + thirdPercentHeight);
+            ypos = UnityEngine.Random.Range(screenTopMarginY, screenTopMarginY - thirdPercentHeight);
 
         } else if(withDirection == new Vector2(-1,-1))
         {
@@ -160,7 +160,7 @@ public class GameController : MonoBehaviour
 
             choseAxis = 0;
             xpos = UnityEngine.Random.Range(screenRightMarginX, screenRightMarginX - thirdPercentWidth);
-            ypos = UnityEngine.Random.Range(screenTopMarginY, screenTopMarginY + thirdPercentHeight);
+            ypos = UnityEngine.Random.Range(screenTopMarginY, screenTopMarginY - thirdPercentHeight);
 
         } else if(withDirection == new Vector2(-1, 1))
         {
@@ -190,14 +190,14 @@ public class GameController : MonoBehaviour
             switch (chosenVertPos)
             {
                 case 0:
-                    ypos = UnityEngine.Random.Range(screenTopMarginY, screenTopMarginY + thirdPercentHeight);
+                    ypos = UnityEngine.Random.Range(screenTopMarginY, screenTopMarginY - thirdPercentHeight);
                     break;
                 case 1:
-                    ypos = UnityEngine.Random.Range(screenTopMarginY + thirdPercentHeight, screenTopMarginY + 2 * thirdPercentHeight);
+                    ypos = UnityEngine.Random.Range(screenTopMarginY - thirdPercentHeight, screenTopMarginY - 2 * thirdPercentHeight);
                     break;
 
                 case 2:
-                    ypos = UnityEngine.Random.Range(screenTopMarginY + 2 * thirdPercentHeight, screenTopMarginY + 3 * thirdPercentHeight);
+                    ypos = UnityEngine.Random.Range(screenTopMarginY - 2 * thirdPercentHeight, screenTopMarginY - 3 * thirdPercentHeight);
                     break;
                 default:
                     Debug.Log("Error in available vertical positions.");
