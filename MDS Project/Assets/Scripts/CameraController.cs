@@ -19,7 +19,7 @@ public class CameraController : MonoBehaviour {
        	
         if (x > Mathf.Epsilon)	// daca distanta e foarte aproape de limita inferioara camera se ridica cu viteza implicita  
         {
-        	rvalue = Mathf.Pow(2.14f,(x / 2.3f));	// functie exponentiala ce are graficul asemanator cu e^x
+        	rvalue = Mathf.Pow(2.14f,(x / 2f));	// functie exponentiala ce are graficul asemanator cu e^x
         }
 
         return rvalue;
