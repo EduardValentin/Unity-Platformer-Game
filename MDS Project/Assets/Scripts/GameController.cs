@@ -70,11 +70,11 @@ public class GameController : MonoBehaviour
     {
         /*
             choseFromPositions este un vector cu 3 elemente, din care unele pot fi ne setate(cu valoarea 0) sau setate(disponibile cu valoarea 1)
-            valoarea v[0] = sus / dreapta
+            valoarea v[0] = sus / stanga
             valoarea v[1] = centru
-            valoarea v[2] = jos / stanga
+            valoarea v[2] = jos / dreapta
          */
-        float offsetFromWalls = mCloneObstacle.GetComponent<CircleCollider2D>().bounds.size.x / 2f + 0.5f;
+        float offsetFromWalls = mCloneObstacle.GetComponent<CircleCollider2D>().bounds.size.x / 2f;
         float thirdPercentWidth = 0.33f * (mScreenWidth - mWallBoundsSize.x);
         float thirdPercentHeight = 0.33f * mScreenHeight;
 
@@ -108,20 +108,15 @@ public class GameController : MonoBehaviour
         int choseAxis;  // 1 = vertical, 2 = orizontal
         float screenBottomMarginY = atCameraOrigin.y - mScreenHeight / 2f;
         float screenTopMarginY = atCameraOrigin.y + mScreenHeight / 2f;
-        float screenLeftMarginX = (atCameraOrigin.x - mScreenWidth / 2f) + mWallBoundsSize.x/2 + offsetFromWalls; 
-        float screenRightMarginX = (atCameraOrigin.x + mScreenWidth / 2f) - mWallBoundsSize.x/2 - offsetFromWalls;
+        float screenLeftMarginX = (atCameraOrigin.x - (mScreenWidth - mWallBoundsSize.x) / 2f); 
+        float screenRightMarginX = (atCameraOrigin.x + (mScreenWidth - mWallBoundsSize.x) / 2f);
 
-        /*print("left = " + (screenLeftMarginX - offsetFromWalls));
-        print("right = " + (screenRightMarginX + offsetFromWalls));
-        print("third p width = " + thirdPercentWidth);*/
-
+        print(screenLeftMarginX + 3 * thirdPercentWidth);
         if (withDirection == new Vector2(0,1))
         {
             // se duce in sus
-
             choseAxis = 2;
             ypos = UnityEngine.Random.Range(screenBottomMarginY , screenBottomMarginY + thirdPercentHeight);
-
         } else if (withDirection == new Vector2(0,-1))
         {
             choseAxis = 2;
@@ -140,10 +135,42 @@ public class GameController : MonoBehaviour
         } else if(withDirection == new Vector2(1,1))
         {
             // dreapta sus
-
-            choseAxis = 0;
+            choseAxis = 0;  // nu mai ramane nimic de ales
             xpos = UnityEngine.Random.Range(screenLeftMarginX, screenLeftMarginX + thirdPercentWidth);
-            ypos = UnityEngine.Random.Range(screenBottomMarginY, screenBottomMarginY + thirdPercentHeight);
+
+            int randIndex = UnityEngine.Random.Range(0, availableVert.Length);
+            int chosenVertPos = availableVert[randIndex];
+
+            if (chosenVertPos == -1)
+            {
+                while (chosenVertPos == -1 && randIndex > 0)
+                {
+                    randIndex--;
+                    chosenVertPos = availableVert[randIndex];
+                }
+            }
+            choseFromPositionsVert[chosenVertPos] = 0;
+            switch (chosenVertPos)
+            {
+                case 0:
+                    ypos = UnityEngine.Random.Range(screenTopMarginY, screenTopMarginY - thirdPercentHeight);
+                    choseFromPositionsVert[0] = 0;
+                    break;
+                case 1:
+                    ypos = UnityEngine.Random.Range(screenTopMarginY - thirdPercentHeight, screenTopMarginY - 2 * thirdPercentHeight);
+                    choseFromPositionsVert[1] = 0;
+
+                    break;
+
+                case 2:
+                    ypos = UnityEngine.Random.Range(screenTopMarginY - 2 * thirdPercentHeight, screenTopMarginY - 3 * thirdPercentHeight);
+                    choseFromPositionsVert[2] = 0;
+
+                    break;
+                default:
+                    Debug.Log("Error in available vertical positions.");
+                    break;
+            }
 
         }
         else if(withDirection == new Vector2(1, -1))
@@ -151,23 +178,119 @@ public class GameController : MonoBehaviour
             // dreapta jos
 
             choseAxis = 0;
+
+            //choseFromPositionsHorz[0] = 0;
             xpos = UnityEngine.Random.Range(screenLeftMarginX, screenLeftMarginX + thirdPercentWidth);
-            ypos = UnityEngine.Random.Range(screenTopMarginY, screenTopMarginY - thirdPercentHeight);
+
+            int randIndex = UnityEngine.Random.Range(0, availableVert.Length);
+            int chosenVertPos = availableVert[randIndex];
+
+            if (chosenVertPos == -1)
+            {
+                while (chosenVertPos == -1 && randIndex > 0)
+                {
+                    randIndex--;
+                    chosenVertPos = availableVert[randIndex];
+                }
+            }
+            choseFromPositionsVert[chosenVertPos] = 0;
+            switch (chosenVertPos)
+            {
+                case 0:
+                    ypos = UnityEngine.Random.Range(screenTopMarginY, screenTopMarginY - thirdPercentHeight);
+                    choseFromPositionsVert[0] = 0;
+                    break;
+                case 1:
+                    ypos = UnityEngine.Random.Range(screenTopMarginY - thirdPercentHeight, screenTopMarginY - 2 * thirdPercentHeight);
+                    choseFromPositionsVert[1] = 0;
+
+                    break;
+
+                case 2:
+                    ypos = UnityEngine.Random.Range(screenTopMarginY - 2 * thirdPercentHeight, screenTopMarginY - 3 * thirdPercentHeight);
+                    choseFromPositionsVert[2] = 0;
+
+                    break;
+                default:
+                    Debug.Log("Error in available vertical positions.");
+                    break;
+            }
+
 
         } else if(withDirection == new Vector2(-1,-1))
         {
             // stanga jos
-
             choseAxis = 0;
             xpos = UnityEngine.Random.Range(screenRightMarginX, screenRightMarginX - thirdPercentWidth);
-            ypos = UnityEngine.Random.Range(screenTopMarginY, screenTopMarginY - thirdPercentHeight);
+            int randIndex = UnityEngine.Random.Range(0, availableVert.Length);
+            int chosenVertPos = availableVert[randIndex];
+            if (chosenVertPos == -1)
+            {
+                while (chosenVertPos == -1 && randIndex > 0)
+                {
+                    randIndex--;
+                    chosenVertPos = availableVert[randIndex];
+                }
+            }
+            choseFromPositionsVert[chosenVertPos] = 0;
+            switch (chosenVertPos)
+            {
+                case 0:
+                    ypos = UnityEngine.Random.Range(screenTopMarginY, screenTopMarginY - thirdPercentHeight);
+                    choseFromPositionsVert[0] = 0;
+                    break;
+                case 1:
+                    ypos = UnityEngine.Random.Range(screenTopMarginY - thirdPercentHeight, screenTopMarginY - 2 * thirdPercentHeight);
+                    choseFromPositionsVert[1] = 0;
+                    break;
+
+                case 2:
+                    ypos = UnityEngine.Random.Range(screenTopMarginY - 2 * thirdPercentHeight, screenTopMarginY - 3 * thirdPercentHeight);
+                    choseFromPositionsVert[2] = 0;
+                    break;
+                default:
+                    Debug.Log("Error in available vertical positions.");
+                    break;
+            }
 
         } else if(withDirection == new Vector2(-1, 1))
         {
             // spre stanga sus
             choseAxis = 0;
             xpos = UnityEngine.Random.Range(screenRightMarginX, screenRightMarginX - thirdPercentWidth);
-            ypos = UnityEngine.Random.Range(screenBottomMarginY, screenBottomMarginY + thirdPercentHeight);
+            int randIndex = UnityEngine.Random.Range(0, availableVert.Length);
+            int chosenVertPos = availableVert[randIndex];
+            if (chosenVertPos == -1)
+            {
+                while (chosenVertPos == -1 && randIndex > 0)
+                {
+                    randIndex--;
+                    chosenVertPos = availableVert[randIndex];
+                }
+            }
+            choseFromPositionsVert[chosenVertPos] = 0;
+            switch (chosenVertPos)
+            {
+                case 0:
+                    ypos = UnityEngine.Random.Range(screenTopMarginY, screenTopMarginY - thirdPercentHeight);
+                    choseFromPositionsVert[0] = 0;
+                    break;
+                case 1:
+                    ypos = UnityEngine.Random.Range(screenTopMarginY - thirdPercentHeight, screenTopMarginY - 2 * thirdPercentHeight);
+                    choseFromPositionsVert[1] = 0;
+
+                    break;
+
+                case 2:
+                    ypos = UnityEngine.Random.Range(screenTopMarginY - 2 * thirdPercentHeight, screenTopMarginY - 3 * thirdPercentHeight);
+                    choseFromPositionsVert[2] = 0;
+
+                    break;
+                default:
+                    Debug.Log("Error in available vertical positions.");
+                    break;
+            }
+
         } else
         {
             throw new InvalidOperationException();
@@ -180,7 +303,7 @@ public class GameController : MonoBehaviour
 
             if (chosenVertPos == -1)
             {
-                while (chosenVertPos == -1 && randIndex >= 0)
+                while (chosenVertPos == -1 && randIndex > 0)
                 {
                     randIndex--;
                     chosenVertPos = availableVert[randIndex];
@@ -191,13 +314,18 @@ public class GameController : MonoBehaviour
             {
                 case 0:
                     ypos = UnityEngine.Random.Range(screenTopMarginY, screenTopMarginY - thirdPercentHeight);
+                    choseFromPositionsVert[0] = 0;
                     break;
                 case 1:
                     ypos = UnityEngine.Random.Range(screenTopMarginY - thirdPercentHeight, screenTopMarginY - 2 * thirdPercentHeight);
+                    choseFromPositionsVert[1] = 0;
+
                     break;
 
                 case 2:
                     ypos = UnityEngine.Random.Range(screenTopMarginY - 2 * thirdPercentHeight, screenTopMarginY - 3 * thirdPercentHeight);
+                    choseFromPositionsVert[2] = 0;
+
                     break;
                 default:
                     Debug.Log("Error in available vertical positions.");
@@ -211,7 +339,7 @@ public class GameController : MonoBehaviour
 
             if(chosenHorzPos == -1)
             {
-                while(chosenHorzPos == -1 && randIndex >= 0)
+                while(chosenHorzPos == -1 && randIndex > 0)
                 {
                     randIndex--;
                     chosenHorzPos = availableHorz[randIndex];
@@ -222,14 +350,22 @@ public class GameController : MonoBehaviour
             switch (chosenHorzPos)
             {
                 case 0:
-                    xpos = UnityEngine.Random.Range(screenLeftMarginX, screenLeftMarginX + thirdPercentWidth);
+                    xpos = UnityEngine.Random.Range(screenLeftMarginX, screenLeftMarginX + thirdPercentWidth) + offsetFromWalls;
+                    print("here1 " + xpos);
+                    choseFromPositionsHorz[0] = 0;
                     break;
                 case 1:
                     xpos = UnityEngine.Random.Range(screenLeftMarginX + thirdPercentWidth, screenLeftMarginX + 2 * thirdPercentWidth);
+                    print("here2 " + xpos);
+
+                    choseFromPositionsHorz[1] = 0;
                     break;
 
                 case 2:
-                    xpos = UnityEngine.Random.Range(screenLeftMarginX + 2 * thirdPercentWidth, screenLeftMarginX + 3 * thirdPercentWidth);
+                    xpos = UnityEngine.Random.Range(screenLeftMarginX + 2 * thirdPercentWidth, screenLeftMarginX + 3 * thirdPercentWidth) - offsetFromWalls;
+                    choseFromPositionsHorz[2] = 0;
+                    print("here3 " + xpos);
+
                     break;
                 default:
                     Debug.Log("Error in available horizontal positions.");
@@ -237,57 +373,48 @@ public class GameController : MonoBehaviour
             }
         }
 
-        print("spawning at: " + new Vector2(xpos, ypos));
+        //print("spawning at: " + new Vector2(xpos, ypos));
         return new Vector2(xpos, ypos);
     }
 
-    public void SpawnMovingObstacle(Vector3 atCameraOrigin)
+    public void SpawnMovingObstacle(Vector3 atCameraOrigin,int numberOfObjects)
     {
-        float speedRand = UnityEngine.Random.Range(1, 2);
+        if (numberOfObjects > 3)
+        {
+            numberOfObjects = 3;
+        }
+
         int chosenDirection = UnityEngine.Random.Range(0, mDirections.Length - 1);
+
         int[] verticalPosAvailable = { 1, 1, 1 };
         int[] horizontalPosAvailable = { 1, 1, 1 };
 
-        Vector2 spawnOrigin = WhereToSpawnObstacle(mDirections[chosenDirection], atCameraOrigin,ref horizontalPosAvailable,ref verticalPosAvailable);   // !!! Direction must not be normalized
-        Vector2 targetPoint = scriptObiect.ComputeTargetPoint(spawnOrigin, mDirections[chosenDirection].normalized, 2);
-
-        GameObject newObstacle = Instantiate(mCloneObstacle, spawnOrigin, mCloneObstacle.transform.rotation);
-        newObstacle.GetComponent<scriptObstacol>().SetAndComputeProperties(mDirections[chosenDirection], newObstacle.transform.position, speedRand, 2);
-        newObstacle.gameObject.tag = "Obstacol";
-    }
-    /*
-    public void SpawnMovingOneObstacleAtOrigin(Vector3 origin)
-    {
-        //print("screen origin at" + origin);
-        float offsetFromWallOrigin = mWallBoundsSize.x / 2 + 1;
-        float offsetFromCameraOrigin = mScreenHeight / 2 - 1;
-
-        float xrand = UnityEngine.Random.Range(mLeftWallBase.transform.position.x + offsetFromWallOrigin, mRightWallBase.transform.position.x - offsetFromWallOrigin);
-        float yrand = UnityEngine.Random.Range(origin.y - offsetFromCameraOrigin, origin.y + offsetFromCameraOrigin);
-        float speedRand = UnityEngine.Random.Range(1, 2);
-
-        int chosenDirection = UnityEngine.Random.Range(0, mDirections.Length-1);
-
-        Vector2 targetPoint = scriptObiect.ComputeTargetPoint(origin, mDirections[chosenDirection].normalized, 2);
-        Vector2 obstacleOrigin = new Vector2(xrand, yrand);
-
-        RaycastHit2D hit = Physics2D.Raycast(obstacleOrigin,mDirections[chosenDirection],2);
-
-      //  Ray horizontalRay = new Ray(obstacleOrigin, mDirections[chosenDirection]);
-        if (hit && hit.transform.gameObject.tag == "Perete" && hit.distance < Vector2.Distance(obstacleOrigin, targetPoint))
+        if (mDirections[chosenDirection] == new Vector2(1,1))
         {
-            print("I will adjust");
-            // need to adjust
-            float difference = Vector2.Distance(obstacleOrigin, targetPoint) - hit.distance + 2;
-            obstacleOrigin = obstacleOrigin - (mDirections[chosenDirection].normalized * difference);
-        } 
-  
-        GameObject newObstacle = Instantiate(mCloneObstacle,obstacleOrigin, mCloneObstacle.transform.rotation);
-        newObstacle.GetComponent<scriptObstacol>().SetAndComputeProperties(mDirections[chosenDirection],newObstacle.transform.position,speedRand,2);
-        newObstacle.gameObject.tag = "Obstacol";
-        //print("spawning new obstacle at " + newObstacle.GetComponent<scriptObstacol>().mPozitieStart );
+            verticalPosAvailable[0] = 0;
+        } else if (mDirections[chosenDirection] == new Vector2(1, -1))
+        {
+            verticalPosAvailable[2] = 0;
+        } else if(mDirections[chosenDirection] == new Vector2(-1, -1))
+        {
+            verticalPosAvailable[2] = 0;
+        } else if (mDirections[chosenDirection] == new Vector2(-1, 1))
+        {
+            verticalPosAvailable[0] = 0;
+        }
+       
 
-    }*/
+        for (int i=0;i<numberOfObjects;i++)
+        {
+            float speedRand = UnityEngine.Random.Range(1, 2);
+            Vector2 spawnOrigin = WhereToSpawnObstacle(mDirections[chosenDirection], atCameraOrigin,ref horizontalPosAvailable,ref verticalPosAvailable);   // !!! Direction must not be normalized
+            Vector2 targetPoint = scriptObiect.ComputeTargetPoint(spawnOrigin, mDirections[chosenDirection].normalized, 2);
+
+            GameObject newObstacle = Instantiate(mCloneObstacle, spawnOrigin, mCloneObstacle.transform.rotation);
+            newObstacle.GetComponent<scriptObstacol>().SetAndComputeProperties(mDirections[chosenDirection], newObstacle.transform.position, speedRand, 2);
+            newObstacle.gameObject.tag = "Obstacol";
+        }
+    }
 
     public void UpdateScoreView()
     {
@@ -302,27 +429,7 @@ public class GameController : MonoBehaviour
 
     public void GameOver()
     {
-		if( mHighestScore.getScore() < mScore)
-		{
-			mHighestScore = new ScoreModel(mScore,DateTime.Now.ToString("MM/dd/yyyy"));
-
-			// Insert to database
-
-			mScoreHistoryDB = new XmlDocument ();
-			mScoreHistoryDB.Load ("Assets/Scripts/XML/ScoreHistory.xml");	// Get the xml file content
-
-			XmlElement xmlbase = mScoreHistoryDB.DocumentElement;
-			XmlElement scoreElement =  mScoreHistoryDB.CreateElement ("score");
-			XmlElement scoreValue = mScoreHistoryDB.CreateElement ("value");
-			scoreValue.InnerText = mHighestScore.getScore().ToString();
-			XmlElement scoreDate = mScoreHistoryDB.CreateElement ("date");
-			scoreDate.InnerText = mHighestScore.getDate ();
-			scoreElement.AppendChild (scoreValue);
-			scoreElement.AppendChild (scoreDate);
-			xmlbase.AppendChild (scoreElement);
-		
-			mScoreHistoryDB.Save("Assets/Scripts/XML/ScoreHistory.xml");
-		}		
+				
 
 		mHighestScoreText.text = "Highest Score: " + mHighestScore.getScore();
 		mLastScoreText.text = "Latest Score: " + mScore;
@@ -331,6 +438,27 @@ public class GameController : MonoBehaviour
         mGameOverPanel.SetActive(true);
         mGameIsOver = true;
 
+        if (mHighestScore.getScore() < mScore)
+        {
+            mHighestScore = new ScoreModel(mScore, DateTime.Now.ToString("MM/dd/yyyy"));
+
+            // Insert to database
+
+            mScoreHistoryDB = new XmlDocument();
+            mScoreHistoryDB.Load("Assets/Scripts/XML/ScoreHistory.xml");    // Get the xml file content
+
+            XmlElement xmlbase = mScoreHistoryDB.DocumentElement;
+            XmlElement scoreElement = mScoreHistoryDB.CreateElement("score");
+            XmlElement scoreValue = mScoreHistoryDB.CreateElement("value");
+            scoreValue.InnerText = mHighestScore.getScore().ToString();
+            XmlElement scoreDate = mScoreHistoryDB.CreateElement("date");
+            scoreDate.InnerText = mHighestScore.getDate();
+            scoreElement.AppendChild(scoreValue);
+            scoreElement.AppendChild(scoreDate);
+            xmlbase.AppendChild(scoreElement);
+
+            mScoreHistoryDB.Save("Assets/Scripts/XML/ScoreHistory.xml");
+        }
     }
     public bool GameIsPaused()
     {
