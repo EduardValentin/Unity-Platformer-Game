@@ -9,6 +9,22 @@ using UnityEngine.SceneManagement;
 
 public class GameController : MonoBehaviour
 {
+	private struct Axis {
+		public  const int Horizontal = 1;
+		public  const int Vertical = 2;
+	};
+
+	private struct VerticalPositions {
+		public const int Top = 0;
+		public const int Center = 1;
+		public const int Bot = 2;
+	};
+
+	private struct HorizontalPositions {
+		public const int Left = 0;
+		public const int Center = 1;
+		public const int Right = 2;
+	};
 
     public GameObject mGameOverPanel;
     public GameObject mCamera;
@@ -18,35 +34,46 @@ public class GameController : MonoBehaviour
 	public Text mHighestScoreText;
 	public Text mLastScoreText;
 
+
+
     private int mScore;
     private float mScreenHeight;
     private float mScreenWidth;
     private bool mGameIsPaused;
     private ScoreModel mHighestScore;
     private XmlDocument mScoreHistoryDB;
-    private GameObject mLeftWallBase;
-    private GameObject mRightWallBase;
     private Vector3 mWallBoundsSize;
     private GameObject mCloneObstacle;
-    private Vector2[] mDirections = { new Vector2(1, 0), new Vector2(-1, 0), new Vector2(0, 1), new Vector2(0, -1), new Vector2(1, 1), new Vector2(-1, -1), new Vector2(1, -1), new Vector2(-1, 1) };
+    private Vector2[] mDirections = { 
+		new Vector2(1, 0),
+		new Vector2(-1, 0),
+		new Vector2(0, 1),
+		new Vector2(0, -1), 
+		new Vector2(1, 1), 
+		new Vector2(-1, -1),
+		new Vector2(1, -1), 
+		new Vector2(-1, 1) 
+	};
+
+	private float mThirdPercentHeight;
+	private float mThirdPercentWidth;
+	private float mOffsetFromWalls;
+	private float mScreenLeftMarginX; 
+	private float mScreenRightMarginX;
+
 
     private void Awake()
     {
         mCloneObstacle = GameObject.FindGameObjectWithTag("ClonaObstacol");
-        mLeftWallBase = GameObject.FindGameObjectWithTag("PereteStangaBase");
-        mRightWallBase = GameObject.FindGameObjectWithTag("PereteDreaptaBase");
-
-        mWallBoundsSize = mLeftWallBase.GetComponent<BoxCollider2D>().bounds.size;  // .x = width , .y = height, .z = depth of the gameobject
-
+       
+		// Se updateaza scorul maxim
         mScoreHistoryDB = new XmlDocument ();
 		mScoreHistoryDB.Load ("Assets/Scripts/XML/ScoreHistory.xml");	// Get the xml file content
-
-
 		XmlNodeList xmlElements = mScoreHistoryDB.GetElementsByTagName ("value");
         int maxim = Int32.Parse(xmlElements[xmlElements.Count - 1].InnerText);
-        
 		mHighestScore = new ScoreModel (maxim, "dontcare");
 
+		// Configuratie initiala
         Time.timeScale = 1f;
         mPlayButton.onClick.AddListener(RestartGame);
         mGameIsPaused = false;
@@ -60,29 +87,97 @@ public class GameController : MonoBehaviour
         mScreenHeight = edgeVector.y * 2;
         mScreenWidth = edgeVector.x * 2;
 
+		// Se calculeaza marginile impreuna cu alte dimensiuni pentru calcule ulterioare
+		mWallBoundsSize = GameObject.FindGameObjectWithTag("PereteDreaptaBase").GetComponent<BoxCollider2D>().bounds.size;  // .x = width , .y = height, .z = depth of the gameobject
+		mThirdPercentHeight = 0.33f * mScreenHeight;
+		mThirdPercentWidth = 0.33f * (mScreenWidth - 2*mWallBoundsSize.x);
+		mOffsetFromWalls = mCloneObstacle.transform.Find("HorizontalColider").GetComponent<BoxCollider2D>().bounds.size.x / 2f;
+		mScreenLeftMarginX = (mCamera.transform.position.x - (mScreenWidth - 2*mWallBoundsSize.x) / 2f); 
+		mScreenRightMarginX = (mCamera.transform.position.x + (mScreenWidth - 2*mWallBoundsSize.x) / 2f);
+
     }
     public void SpawnWalls(GameObject cloneWalls, float size)
     {
         Instantiate(cloneWalls, cloneWalls.transform.position + new Vector3(0, size, 0), cloneWalls.transform.rotation);
     }
 
-    private Vector2 WhereToSpawnObstacle(Vector2 withDirection,Vector2 atCameraOrigin,ref int[] choseFromPositionsHorz,ref int[] choseFromPositionsVert)
-    {
-        /*
-            choseFromPositions este un vector cu 3 elemente, din care unele pot fi ne setate(cu valoarea 0) sau setate(disponibile cu valoarea 1)
-            valoarea v[0] = sus / stanga
-            valoarea v[1] = centru
-            valoarea v[2] = jos / dreapta
-         */
-        float offsetFromWalls = mCloneObstacle.GetComponent<CircleCollider2D>().bounds.size.x / 2f;
-        float thirdPercentWidth = 0.33f * (mScreenWidth - mWallBoundsSize.x);
-        float thirdPercentHeight = 0.33f * mScreenHeight;
+	private int ChoseRandomHorizontalPosition( int[] fromAvailable , out float xpos) 
+	{
+		int randIndex = UnityEngine.Random.Range(0, fromAvailable.Length-1);
+		int chosenHorzPos = fromAvailable[randIndex];
 
+		if(chosenHorzPos == -1)
+		{
+			while(chosenHorzPos == -1 && randIndex > 0)
+			{
+				randIndex--;
+				chosenHorzPos = fromAvailable[randIndex];
+			}
+		}
+			
+		switch (chosenHorzPos)
+		{
+		case HorizontalPositions.Left:
+			xpos = UnityEngine.Random.Range(mScreenLeftMarginX, mScreenLeftMarginX + mThirdPercentWidth) + mOffsetFromWalls;
+			break;
+		case HorizontalPositions.Center:
+			xpos = UnityEngine.Random.Range(mScreenLeftMarginX + mThirdPercentWidth, mScreenLeftMarginX + 2 * mThirdPercentWidth);
+			break;
+		case HorizontalPositions.Right:
+			xpos = UnityEngine.Random.Range(mScreenLeftMarginX + 2 * mThirdPercentWidth, mScreenLeftMarginX + 3 * mThirdPercentWidth) - mOffsetFromWalls;
+			break;
+		default:
+			Debug.Log ("Error in available horizontal positions.");
+			xpos = -9999;
+			break;
+		}
+
+		return chosenHorzPos;
+	}
+
+	private int ChoseRandomVerticalPosition(int[] fromAvailable, float withScreenTopMarginY, out float ypos)
+	{
+	
+		int randIndex = UnityEngine.Random.Range(0, fromAvailable.Length-1);
+		int chosenVertPos = fromAvailable[randIndex];
+
+		if (chosenVertPos == -1)	// daca s-a ales o pozitie goala se cauta prima pozitie disponibila catre stanga
+		{
+			while (chosenVertPos == -1 && randIndex > 0)
+			{
+				randIndex--;
+				chosenVertPos = fromAvailable[randIndex];
+			}
+		}
+
+		switch (chosenVertPos)
+		{
+		case VerticalPositions.Top:
+			ypos = UnityEngine.Random.Range(withScreenTopMarginY, withScreenTopMarginY - mThirdPercentHeight);
+			break;
+		case VerticalPositions.Center:
+			ypos = UnityEngine.Random.Range(withScreenTopMarginY - mThirdPercentHeight, withScreenTopMarginY - 2 * mThirdPercentHeight);
+			break;
+
+		case VerticalPositions.Bot:
+			ypos = UnityEngine.Random.Range(withScreenTopMarginY - 2 * mThirdPercentHeight, withScreenTopMarginY - 3 * mThirdPercentHeight);
+			break;
+		default:
+			Debug.Log ("Error in available vertical positions.");
+			ypos = -9999;
+			break;
+		}
+		return chosenVertPos;
+	}
+
+    private Vector2 WhereToSpawnObstacle(Vector2 withDirection,Vector2 atCameraOrigin,ref int[] choseFromPositionsHorz,ref int[] choseFromPositionsVert)
+    {     
         float xpos = -999, ypos = -999;
 
         int[] availableHorz = new int[3];
-        int indexHorz = 0;
-        int[] availableVert = new int[3];
+		int[] availableVert = new int[3];
+
+		int indexHorz = 0;
         int indexVert = 0;
 
         for(int i=0;i<3;i++)
@@ -100,269 +195,87 @@ public class GameController : MonoBehaviour
             }
         }
 
-        if (indexHorz < 3)
+		if (indexHorz < 3)	// daca nu s-au umplut toate pozitiile se pune un capat de vector (i.e. -1)
             availableHorz[indexHorz] = -1;
         if (indexVert < 3)
             availableVert[indexVert] = -1;
 
-        int choseAxis;  // 1 = vertical, 2 = orizontal
+        int choseAxis;	// in functie de directia pe care se merge, se va alege o coordonata, urmand ca cealalta sa fie aleasa la final pentru a evita alegerea ei pe fiecare branch si duplicarea codului
+
         float screenBottomMarginY = atCameraOrigin.y - mScreenHeight / 2f;
         float screenTopMarginY = atCameraOrigin.y + mScreenHeight / 2f;
-        float screenLeftMarginX = (atCameraOrigin.x - (mScreenWidth - mWallBoundsSize.x) / 2f); 
-        float screenRightMarginX = (atCameraOrigin.x + (mScreenWidth - mWallBoundsSize.x) / 2f);
+        
 
-        print(screenLeftMarginX + 3 * thirdPercentWidth);
+        //print(screenLeftMarginX + 3 * thirdPercentWidth);
         if (withDirection == new Vector2(0,1))
         {
             // se duce in sus
-            choseAxis = 2;
-            ypos = UnityEngine.Random.Range(screenBottomMarginY , screenBottomMarginY + thirdPercentHeight);
+			choseAxis = Axis.Horizontal;
+            ypos = UnityEngine.Random.Range(screenBottomMarginY , screenBottomMarginY + mThirdPercentHeight);
         } else if (withDirection == new Vector2(0,-1))
         {
-            choseAxis = 2;
-            ypos = UnityEngine.Random.Range(screenTopMarginY, screenTopMarginY - thirdPercentHeight);
+			choseAxis = Axis.Horizontal;
+            ypos = UnityEngine.Random.Range(screenTopMarginY, screenTopMarginY - mThirdPercentHeight);
         } else if (withDirection == new Vector2(1,0))
         {
             // se duce in dreapta
-            choseAxis = 1;
-            xpos = UnityEngine.Random.Range(screenLeftMarginX, screenLeftMarginX + thirdPercentWidth);
+			choseAxis = Axis.Vertical;
+			xpos = UnityEngine.Random.Range(mScreenLeftMarginX, mScreenLeftMarginX + mThirdPercentWidth);
         } else if(withDirection == new Vector2(-1,0))
         {
             // se duce in stanga
-            choseAxis = 1;
-            xpos = UnityEngine.Random.Range(screenRightMarginX , screenRightMarginX - thirdPercentWidth);
+			choseAxis = Axis.Vertical;
+			xpos = UnityEngine.Random.Range(mScreenRightMarginX , mScreenRightMarginX - mThirdPercentWidth);
 
         } else if(withDirection == new Vector2(1,1))
         {
             // dreapta sus
             choseAxis = 0;  // nu mai ramane nimic de ales
-            xpos = UnityEngine.Random.Range(screenLeftMarginX, screenLeftMarginX + thirdPercentWidth);
-
-            int randIndex = UnityEngine.Random.Range(0, availableVert.Length);
-            int chosenVertPos = availableVert[randIndex];
-
-            if (chosenVertPos == -1)
-            {
-                while (chosenVertPos == -1 && randIndex > 0)
-                {
-                    randIndex--;
-                    chosenVertPos = availableVert[randIndex];
-                }
-            }
-            choseFromPositionsVert[chosenVertPos] = 0;
-            switch (chosenVertPos)
-            {
-                case 0:
-                    ypos = UnityEngine.Random.Range(screenTopMarginY, screenTopMarginY - thirdPercentHeight);
-                    choseFromPositionsVert[0] = 0;
-                    break;
-                case 1:
-                    ypos = UnityEngine.Random.Range(screenTopMarginY - thirdPercentHeight, screenTopMarginY - 2 * thirdPercentHeight);
-                    choseFromPositionsVert[1] = 0;
-
-                    break;
-
-                case 2:
-                    ypos = UnityEngine.Random.Range(screenTopMarginY - 2 * thirdPercentHeight, screenTopMarginY - 3 * thirdPercentHeight);
-                    choseFromPositionsVert[2] = 0;
-
-                    break;
-                default:
-                    Debug.Log("Error in available vertical positions.");
-                    break;
-            }
-
+			xpos = UnityEngine.Random.Range(mScreenLeftMarginX, mScreenLeftMarginX + mThirdPercentWidth);     
         }
         else if(withDirection == new Vector2(1, -1))
         {
             // dreapta jos
 
-            choseAxis = 0;
-
-            //choseFromPositionsHorz[0] = 0;
-            xpos = UnityEngine.Random.Range(screenLeftMarginX, screenLeftMarginX + thirdPercentWidth);
-
-            int randIndex = UnityEngine.Random.Range(0, availableVert.Length);
-            int chosenVertPos = availableVert[randIndex];
-
-            if (chosenVertPos == -1)
-            {
-                while (chosenVertPos == -1 && randIndex > 0)
-                {
-                    randIndex--;
-                    chosenVertPos = availableVert[randIndex];
-                }
-            }
-            choseFromPositionsVert[chosenVertPos] = 0;
-            switch (chosenVertPos)
-            {
-                case 0:
-                    ypos = UnityEngine.Random.Range(screenTopMarginY, screenTopMarginY - thirdPercentHeight);
-                    choseFromPositionsVert[0] = 0;
-                    break;
-                case 1:
-                    ypos = UnityEngine.Random.Range(screenTopMarginY - thirdPercentHeight, screenTopMarginY - 2 * thirdPercentHeight);
-                    choseFromPositionsVert[1] = 0;
-
-                    break;
-
-                case 2:
-                    ypos = UnityEngine.Random.Range(screenTopMarginY - 2 * thirdPercentHeight, screenTopMarginY - 3 * thirdPercentHeight);
-                    choseFromPositionsVert[2] = 0;
-
-                    break;
-                default:
-                    Debug.Log("Error in available vertical positions.");
-                    break;
-            }
-
+            choseAxis = 0;	// nu mai ramane nimic de ales la final			 
+			xpos = UnityEngine.Random.Range(mScreenLeftMarginX, mScreenLeftMarginX + mThirdPercentWidth);
+			int chosenPosition = ChoseRandomVerticalPosition (availableVert, screenTopMarginY, out ypos);	// chose a vertical position and set in ypos
+			choseFromPositionsVert[chosenPosition] = 0;	// unset the position
 
         } else if(withDirection == new Vector2(-1,-1))
         {
             // stanga jos
             choseAxis = 0;
-            xpos = UnityEngine.Random.Range(screenRightMarginX, screenRightMarginX - thirdPercentWidth);
-            int randIndex = UnityEngine.Random.Range(0, availableVert.Length);
-            int chosenVertPos = availableVert[randIndex];
-            if (chosenVertPos == -1)
-            {
-                while (chosenVertPos == -1 && randIndex > 0)
-                {
-                    randIndex--;
-                    chosenVertPos = availableVert[randIndex];
-                }
-            }
-            choseFromPositionsVert[chosenVertPos] = 0;
-            switch (chosenVertPos)
-            {
-                case 0:
-                    ypos = UnityEngine.Random.Range(screenTopMarginY, screenTopMarginY - thirdPercentHeight);
-                    choseFromPositionsVert[0] = 0;
-                    break;
-                case 1:
-                    ypos = UnityEngine.Random.Range(screenTopMarginY - thirdPercentHeight, screenTopMarginY - 2 * thirdPercentHeight);
-                    choseFromPositionsVert[1] = 0;
-                    break;
-
-                case 2:
-                    ypos = UnityEngine.Random.Range(screenTopMarginY - 2 * thirdPercentHeight, screenTopMarginY - 3 * thirdPercentHeight);
-                    choseFromPositionsVert[2] = 0;
-                    break;
-                default:
-                    Debug.Log("Error in available vertical positions.");
-                    break;
-            }
+            xpos = UnityEngine.Random.Range(mScreenRightMarginX, mScreenRightMarginX - mThirdPercentWidth);
+			int chosenPosition = ChoseRandomVerticalPosition (availableVert, screenTopMarginY, out ypos);	
+			choseFromPositionsVert[chosenPosition] = 0;	// unset the position
 
         } else if(withDirection == new Vector2(-1, 1))
         {
             // spre stanga sus
             choseAxis = 0;
-            xpos = UnityEngine.Random.Range(screenRightMarginX, screenRightMarginX - thirdPercentWidth);
-            int randIndex = UnityEngine.Random.Range(0, availableVert.Length);
-            int chosenVertPos = availableVert[randIndex];
-            if (chosenVertPos == -1)
-            {
-                while (chosenVertPos == -1 && randIndex > 0)
-                {
-                    randIndex--;
-                    chosenVertPos = availableVert[randIndex];
-                }
-            }
-            choseFromPositionsVert[chosenVertPos] = 0;
-            switch (chosenVertPos)
-            {
-                case 0:
-                    ypos = UnityEngine.Random.Range(screenTopMarginY, screenTopMarginY - thirdPercentHeight);
-                    choseFromPositionsVert[0] = 0;
-                    break;
-                case 1:
-                    ypos = UnityEngine.Random.Range(screenTopMarginY - thirdPercentHeight, screenTopMarginY - 2 * thirdPercentHeight);
-                    choseFromPositionsVert[1] = 0;
-
-                    break;
-
-                case 2:
-                    ypos = UnityEngine.Random.Range(screenTopMarginY - 2 * thirdPercentHeight, screenTopMarginY - 3 * thirdPercentHeight);
-                    choseFromPositionsVert[2] = 0;
-
-                    break;
-                default:
-                    Debug.Log("Error in available vertical positions.");
-                    break;
-            }
+            xpos = UnityEngine.Random.Range(mScreenRightMarginX, mScreenRightMarginX - mThirdPercentWidth);
+			int chosenPosition = ChoseRandomVerticalPosition (availableVert, screenTopMarginY, out ypos);	
+			choseFromPositionsVert[chosenPosition] = 0;	// unset the position
 
         } else
         {
             throw new InvalidOperationException();
         }
 
-        if (choseAxis == 1)
+		// ramane de vazut ce coordonate au ramas pentru a fi fixate random
+
+		if (choseAxis == Axis.Vertical)
         {
-            int randIndex = UnityEngine.Random.Range(0, availableVert.Length - 1);
-            int chosenVertPos = availableVert[randIndex];
-
-            if (chosenVertPos == -1)
-            {
-                while (chosenVertPos == -1 && randIndex > 0)
-                {
-                    randIndex--;
-                    chosenVertPos = availableVert[randIndex];
-                }
-            }
-            choseFromPositionsVert[chosenVertPos] = 0;
-            switch (chosenVertPos)
-            {
-                case 0:
-                    ypos = UnityEngine.Random.Range(screenTopMarginY, screenTopMarginY - thirdPercentHeight);
-                    break;
-                case 1:
-                    ypos = UnityEngine.Random.Range(screenTopMarginY - thirdPercentHeight, screenTopMarginY - 2 * thirdPercentHeight);
-                    break;
-
-                case 2:
-                    ypos = UnityEngine.Random.Range(screenTopMarginY - 2 * thirdPercentHeight, screenTopMarginY - 3 * thirdPercentHeight);
-                    break;
-                default:
-                    Debug.Log("Error in available vertical positions.");
-                    break;
-            }
+			int chosenPosition = ChoseRandomVerticalPosition (availableVert, screenTopMarginY, out ypos);	// chose a vertical position and set in ypos
+			choseFromPositionsVert[chosenPosition] = 0;	// unset the position
         }
-        else if (choseAxis == 2)
+		else if (choseAxis == Axis.Horizontal)
         {
-            int randIndex = UnityEngine.Random.Range(0, availableHorz.Length-1);
-            int chosenHorzPos = availableHorz[randIndex];
-
-            if(chosenHorzPos == -1)
-            {
-                while(chosenHorzPos == -1 && randIndex > 0)
-                {
-                    randIndex--;
-                    chosenHorzPos = availableHorz[randIndex];
-                }
-            }
-
-            choseFromPositionsHorz[chosenHorzPos] = 0;
-            switch (chosenHorzPos)
-            {
-                case 0:
-                    xpos = UnityEngine.Random.Range(screenLeftMarginX, screenLeftMarginX + thirdPercentWidth) + offsetFromWalls;
-                    print("here1 " + xpos);
-                    break;
-                case 1:
-                    xpos = UnityEngine.Random.Range(screenLeftMarginX + thirdPercentWidth, screenLeftMarginX + 2 * thirdPercentWidth);
-                    print("here2 " + xpos);
-                    break;
-                case 2:
-                    xpos = UnityEngine.Random.Range(screenLeftMarginX + 2 * thirdPercentWidth, screenLeftMarginX + 3 * thirdPercentWidth) - offsetFromWalls;
-                    print("here3 " + xpos);
-                    break;
-                default:
-                    Debug.Log("Error in available horizontal positions.");
-                    break;
-            }
+			int chosenPosition = ChoseRandomHorizontalPosition (availableHorz, out xpos);	// chose a horizontal position and set in ypos
+			choseFromPositionsHorz[chosenPosition] = 0;	// unset the position
         }
 
-        //print("spawning at: " + new Vector2(xpos, ypos));
         return new Vector2(xpos, ypos);
     }
 
@@ -378,6 +291,8 @@ public class GameController : MonoBehaviour
         int[] verticalPosAvailable = { 1, 1, 1 };
         int[] horizontalPosAvailable = { 1, 1, 1 };
 
+		// daca directia aleasa e pe diagonala, ne asiguram ca obstacolul nu va iesi din ecranul sau
+
         if (mDirections[chosenDirection] == new Vector2(1,1))
         {
             verticalPosAvailable[0] = 0;
@@ -392,7 +307,7 @@ public class GameController : MonoBehaviour
             verticalPosAvailable[0] = 0;
         }
        
-
+		// se spawneaza obiectele 
         for (int i=0;i<numberOfObjects;i++)
         {
             float speedRand = UnityEngine.Random.Range(1, 2);
