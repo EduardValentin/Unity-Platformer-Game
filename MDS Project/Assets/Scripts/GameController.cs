@@ -418,10 +418,16 @@ public class GameController : MonoBehaviour
 
     public void GameOver()
     {
-				
+		mHighestScoreText.text = "Highscore: " + mHighestScore.getScore();
+		mLastScoreText.text = "" + mScore;
 
-		mHighestScoreText.text = "Highest Score: " + mHighestScore.getScore();
-		mLastScoreText.text = "Latest Score: " + mScore;
+		// new
+		if (mScore > mHighestScore.getScore ()) {
+			mLastScoreText.fontSize = 70;
+			mLastScoreText.color = Color.red;
+		}
+		else
+			mLastScoreText.fontSize = 60;
 
 		PauseGame();
         mGameOverPanel.SetActive(true);
