@@ -298,7 +298,7 @@ public class GameController : MonoBehaviour
 
         if (choseAxis == 1)
         {
-            int randIndex = UnityEngine.Random.Range(0, availableVert.Length);
+            int randIndex = UnityEngine.Random.Range(0, availableVert.Length - 1);
             int chosenVertPos = availableVert[randIndex];
 
             if (chosenVertPos == -1)
@@ -314,18 +314,13 @@ public class GameController : MonoBehaviour
             {
                 case 0:
                     ypos = UnityEngine.Random.Range(screenTopMarginY, screenTopMarginY - thirdPercentHeight);
-                    choseFromPositionsVert[0] = 0;
                     break;
                 case 1:
                     ypos = UnityEngine.Random.Range(screenTopMarginY - thirdPercentHeight, screenTopMarginY - 2 * thirdPercentHeight);
-                    choseFromPositionsVert[1] = 0;
-
                     break;
 
                 case 2:
                     ypos = UnityEngine.Random.Range(screenTopMarginY - 2 * thirdPercentHeight, screenTopMarginY - 3 * thirdPercentHeight);
-                    choseFromPositionsVert[2] = 0;
-
                     break;
                 default:
                     Debug.Log("Error in available vertical positions.");
@@ -334,7 +329,7 @@ public class GameController : MonoBehaviour
         }
         else if (choseAxis == 2)
         {
-            int randIndex = UnityEngine.Random.Range(0, availableHorz.Length);
+            int randIndex = UnityEngine.Random.Range(0, availableHorz.Length-1);
             int chosenHorzPos = availableHorz[randIndex];
 
             if(chosenHorzPos == -1)
@@ -352,20 +347,14 @@ public class GameController : MonoBehaviour
                 case 0:
                     xpos = UnityEngine.Random.Range(screenLeftMarginX, screenLeftMarginX + thirdPercentWidth) + offsetFromWalls;
                     print("here1 " + xpos);
-                    choseFromPositionsHorz[0] = 0;
                     break;
                 case 1:
                     xpos = UnityEngine.Random.Range(screenLeftMarginX + thirdPercentWidth, screenLeftMarginX + 2 * thirdPercentWidth);
                     print("here2 " + xpos);
-
-                    choseFromPositionsHorz[1] = 0;
                     break;
-
                 case 2:
                     xpos = UnityEngine.Random.Range(screenLeftMarginX + 2 * thirdPercentWidth, screenLeftMarginX + 3 * thirdPercentWidth) - offsetFromWalls;
-                    choseFromPositionsHorz[2] = 0;
                     print("here3 " + xpos);
-
                     break;
                 default:
                     Debug.Log("Error in available horizontal positions.");
@@ -429,10 +418,16 @@ public class GameController : MonoBehaviour
 
     public void GameOver()
     {
-				
+		mHighestScoreText.text = "Highscore: " + mHighestScore.getScore();
+		mLastScoreText.text = "" + mScore;
 
-		mHighestScoreText.text = "Highest Score: " + mHighestScore.getScore();
-		mLastScoreText.text = "Latest Score: " + mScore;
+		// new
+		if (mScore > mHighestScore.getScore ()) {
+			mLastScoreText.fontSize = 70;
+			mLastScoreText.color = Color.red;
+		}
+		else
+			mLastScoreText.fontSize = 60;
 
 		PauseGame();
         mGameOverPanel.SetActive(true);
