@@ -82,7 +82,7 @@ public class PlayerController : MonoBehaviour
             mJumpReady = true;
 
         }
-        else if (collision.gameObject.tag == "Obstacol" || collision.gameObject.tag == "GarbageCollector")
+        else if (collision.gameObject.tag == "ObstacolColider" || collision.gameObject.tag == "GarbageCollector")
         {
             // ey game is over
             mGameController.GameOver();
