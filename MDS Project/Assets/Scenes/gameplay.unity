@@ -1882,6 +1882,8 @@ MonoBehaviour:
   mCharacter: {fileID: 1714126292}
   mOffset: {x: 0, y: -2.2, z: 0}
   mDificultyScale: 0.7
+  dampTime: 0.15
+  target: {fileID: 1714126294}
 --- !u!1 &1902189471
 GameObject:
   m_ObjectHideFlags: 0
