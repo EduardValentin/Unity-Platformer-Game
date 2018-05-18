@@ -13,6 +13,7 @@ TagManager:
   - PereteStangaBase
   - PereteDreaptaBase
   - ClonaObstacol
+  - ObstacolColider
   layers:
   - Default
   - TransparentFX
