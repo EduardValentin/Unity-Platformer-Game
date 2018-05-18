@@ -125,12 +125,12 @@ public class GameController : MonoBehaviour
         {
             // se duce in dreapta
             choseAxis = 1;
-            xpos = UnityEngine.Random.Range(screenLeftMarginX, screenLeftMarginX + thirdPercentWidth);
+            xpos = UnityEngine.Random.Range(screenLeftMarginX + offsetFromWalls, screenLeftMarginX + thirdPercentWidth);
         } else if(withDirection == new Vector2(-1,0))
         {
             // se duce in stanga
             choseAxis = 1;
-            xpos = UnityEngine.Random.Range(screenRightMarginX , screenRightMarginX - thirdPercentWidth);
+            xpos = UnityEngine.Random.Range(screenRightMarginX  - offsetFromWalls, screenRightMarginX - thirdPercentWidth);
 
         } else if(withDirection == new Vector2(1,1))
         {

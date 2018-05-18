@@ -2,7 +2,8 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class BackgroundFollow : MonoBehaviour {
+public class BackgroundFollow : MonoBehaviour
+{
 
     private GameObject mCharacter;
     private Vector3 mOffset;
@@ -18,5 +19,13 @@ public class BackgroundFollow : MonoBehaviour {
     void Update()
     {
         transform.position = new Vector3(0, mCharacter.transform.position.y + mOffset.y, 0);
+    }
+    private void OnTriggerEnter2D(Collider2D collision)
+    {
+        if (collision.gameObject.name == "Spawner")
+        {
+            //mGameControllerScript.SpawnWalls(this.gameObject.transform.parent.gameObject, mGameControllerScript.GetScreenHeight());   // Spawn pereti noi
+            //mGameControllerScript.SpawnMovingObstacle(new Vector2(mGameControllerScript.mCamera.transform.position.x, mNextScreenY), UnityEngine.Random.Range(1, 3));
+        }
     }
 }
