@@ -14,6 +14,7 @@ public class PlayerController : MonoBehaviour
     [HideInInspector]
     public bool mJumpedOnce;
 	public int mHighestPoint;
+	public AudioSource jumpSound;
 
     void Start()
     {
@@ -50,9 +51,9 @@ public class PlayerController : MonoBehaviour
             }
         }
 
-        if (mJumpReady == true && Input.GetKeyDown("space"))
+		if (mJumpReady == true && Input.GetKeyDown("space") /*Input.touchCount > 0 && Input.GetTouch(0).phase == TouchPhase.Began*/)
         {
-
+			jumpSound.Play ();
             mJumpReady = false;
             mRbody.AddForce(new Vector2(1100 * mDirection, 950));
 
