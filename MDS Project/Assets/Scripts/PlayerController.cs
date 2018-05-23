@@ -13,13 +13,14 @@ public class PlayerController : MonoBehaviour
     private int mScore;
     [HideInInspector]
     public bool mJumpedOnce;
-	public int mHighestPoint;
+	  public int mHighestPoint;
     private bool mIsInvulnerable;
     private SpriteRenderer mSpriteRenderer;
+	  public AudioSource jumpSound;
     void Start()
     {
         mIsInvulnerable = false;
-		mHighestPoint = (int)transform.position.y;
+		    mHighestPoint = (int)transform.position.y;
         mJumpedOnce = false;
         mRbody = GetComponent<Rigidbody2D>();
         mJumpReady = true;
@@ -53,9 +54,9 @@ public class PlayerController : MonoBehaviour
             }
         }
 
-        if (mJumpReady == true && Input.GetKeyDown("space"))
+		if (mJumpReady == true && Input.GetKeyDown("space") /*Input.touchCount > 0 && Input.GetTouch(0).phase == TouchPhase.Began*/)
         {
-
+			jumpSound.Play ();
             mJumpReady = false;
             mRbody.AddForce(new Vector2(1100 * mDirection, 950));
 
