@@ -36,7 +36,7 @@ public class GameController : MonoBehaviour
     public Button mPlayButton;
     public Text mHighestScoreText;
     public Text mLastScoreText;
-
+    public GameObject mPerkClone;
 
 
     private int mScore;
@@ -67,14 +67,12 @@ public class GameController : MonoBehaviour
 
     private void Awake()
     {
+        StartCoroutine(SpawnPerkAfterTime(10));
         mCloneObstacle = GameObject.FindGameObjectWithTag("ClonaObstacol");
 
         // Se updateaza scorul maxim
-        mScoreHistoryDB = new XmlDocument();
-        mScoreHistoryDB.Load("Assets/Scripts/XML/ScoreHistory.xml");    // Get the xml file content
-        XmlNodeList xmlElements = mScoreHistoryDB.GetElementsByTagName("value");
-        int maxim = Int32.Parse(xmlElements[xmlElements.Count - 1].InnerText);
-        mHighestScore = new ScoreModel(maxim, "dontcare");
+        mHighestScore = DatabaseModel.Instance.GetMaxScore();
+       
 
         // Configuratie initiala
         Time.timeScale = 1f;
@@ -346,10 +344,10 @@ public class GameController : MonoBehaviour
             }
             float speedRand = UnityEngine.Random.Range(1, 2);
             Vector2 spawnOrigin = WhereToSpawnObstacle(direction, atCameraOrigin, ref horizontalPosAvailable, ref verticalPosAvailable);   // !!! Direction must not be normalized
-            Vector2 targetPoint = scriptObiect.ComputeTargetPoint(spawnOrigin, direction.normalized, 2);
+            AbstractObiectController.ComputeTargetPoint(spawnOrigin, direction.normalized, 2);
 
             GameObject newObstacle = Instantiate(mCloneObstacle, spawnOrigin, mCloneObstacle.transform.rotation);
-            newObstacle.GetComponent<scriptObstacol>().SetAndComputeProperties(direction, newObstacle.transform.position, speedRand, 2);
+            newObstacle.GetComponent<ObstacolController>().SetAndComputeProperties(direction, newObstacle.transform.position, speedRand, 2);
             newObstacle.gameObject.tag = "Obstacol";
 
             if (weReverse == true)
@@ -373,16 +371,16 @@ public class GameController : MonoBehaviour
     public void GameOver()
     {
         mHighestScoreText.text = "Highscore: " + mHighestScore.getScore();
-        mLastScoreText.text = "" + mScore;
+        mLastScoreText.text = "Score: " + mScore;
 
-        // new
-        if (mScore > mHighestScore.getScore())
+        
+        /*if (mScore > mHighestScore.getScore())
         {
             mLastScoreText.fontSize = 70;
             mLastScoreText.color = Color.red;
         }
         else
-            mLastScoreText.fontSize = 60;
+            mLastScoreText.fontSize = 60;*/
 
         PauseGame();
         mGameOverPanel.SetActive(true);
@@ -391,23 +389,8 @@ public class GameController : MonoBehaviour
         if (mHighestScore.getScore() < mScore)
         {
             mHighestScore = new ScoreModel(mScore, DateTime.Now.ToString("MM/dd/yyyy"));
-
-            // Insert to database
-
-            mScoreHistoryDB = new XmlDocument();
-            mScoreHistoryDB.Load("Assets/Scripts/XML/ScoreHistory.xml");    // Get the xml file content
-
-            XmlElement xmlbase = mScoreHistoryDB.DocumentElement;
-            XmlElement scoreElement = mScoreHistoryDB.CreateElement("score");
-            XmlElement scoreValue = mScoreHistoryDB.CreateElement("value");
-            scoreValue.InnerText = mHighestScore.getScore().ToString();
-            XmlElement scoreDate = mScoreHistoryDB.CreateElement("date");
-            scoreDate.InnerText = mHighestScore.getDate();
-            scoreElement.AppendChild(scoreValue);
-            scoreElement.AppendChild(scoreDate);
-            xmlbase.AppendChild(scoreElement);
-
-            mScoreHistoryDB.Save("Assets/Scripts/XML/ScoreHistory.xml");
+            // Insert highest score to database
+            DatabaseModel.Instance.AddHighestScore(mHighestScore);
         }
     }
     public bool GameIsPaused()
@@ -427,5 +410,17 @@ public class GameController : MonoBehaviour
     {
         Time.timeScale = 1;
         mGameIsPaused = false;
+    }
+
+    IEnumerator SpawnPerkAfterTime(float time)
+    {
+        while (true)
+        {
+            print("Spawning perk in " + time + " seconds");
+            yield return new WaitForSeconds(time);
+
+            Instantiate(mPerkClone, new Vector3(mCamera.transform.position.x + UnityEngine.Random.Range(0, 1), mCamera.transform.position.y + 10, mPerkClone.transform.position.z), mPerkClone.transform.rotation);
+
+        }
     }
 }
