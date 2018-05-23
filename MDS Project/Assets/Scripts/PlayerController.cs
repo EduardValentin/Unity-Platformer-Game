@@ -13,17 +13,20 @@ public class PlayerController : MonoBehaviour
     private int mScore;
     [HideInInspector]
     public bool mJumpedOnce;
-	public int mHighestPoint;
-	public AudioSource jumpSound;
-
+	  public int mHighestPoint;
+    private bool mIsInvulnerable;
+    private SpriteRenderer mSpriteRenderer;
+	  public AudioSource jumpSound;
     void Start()
     {
-		mHighestPoint = (int)transform.position.y;
+        mIsInvulnerable = false;
+		    mHighestPoint = (int)transform.position.y;
         mJumpedOnce = false;
         mRbody = GetComponent<Rigidbody2D>();
         mJumpReady = true;
         mDirection = 1;
         mGameController = mGameControllerObj.GetComponent<GameController>();
+        mSpriteRenderer = GetComponent<SpriteRenderer>();
     }
 
     void Update()
@@ -73,7 +76,22 @@ public class PlayerController : MonoBehaviour
         }
         return false;
     }
+    public bool IsInvulnerable()
+    {
+        return mIsInvulnerable;
+    }
+    public void MakeInvulnerable()
+    {
+        mIsInvulnerable = true;
+        mSpriteRenderer.color = new Color(1f, 1f, 1f, .5f);
+        StartCoroutine(VulnerabilityTimer(10));
 
+    }
+    public void MakeVulnerable()
+    {
+        mIsInvulnerable = false;
+        mSpriteRenderer.color = new Color(1f, 1f, 1f, 1f);
+    }
     public void OnCollisionEnter2D(Collision2D collision)
     {
 
@@ -83,11 +101,14 @@ public class PlayerController : MonoBehaviour
             mJumpReady = true;
 
         }
-        else if (collision.gameObject.tag == "ObstacolColider" || collision.gameObject.tag == "GarbageCollector")
-        {
-            // ey game is over
-            mGameController.GameOver();
-        }
+        
+    }
 
+    IEnumerator VulnerabilityTimer(float time)
+    {
+        yield return new WaitForSeconds(time);
+
+        // Code to execute after the delay
+        MakeVulnerable();
     }
 }
