@@ -28,15 +28,14 @@ public class GameController : MonoBehaviour
         public const int Center = 1;
         public const int Right = 2;
     };
-
+    public GameObject mPausePanel;
     public GameObject mGameOverPanel;
     public GameObject mCamera;
-    public bool mGameIsOver;
     public Text mScoreText;
     public Button mPlayButton;
     public Text mHighestScoreText;
     public Text mLastScoreText;
-
+    public bool mGameIsOver;
 
 
     private int mScore;
@@ -83,7 +82,7 @@ public class GameController : MonoBehaviour
         mScoreText.text = "Score: " + 0;
         mGameIsOver = false;
         mGameOverPanel.SetActive(false);
-
+        mPausePanel.SetActive(false);
         // Se calculeaza dimensiunile ecranului
         Vector2 topRightCorner = new Vector2(1, 1);
         Vector2 edgeVector = Camera.main.ViewportToWorldPoint(topRightCorner);  // Contine coordonatele coltului dreapta-sus al ecranului in starea initiala
@@ -372,6 +371,7 @@ public class GameController : MonoBehaviour
 
     public void GameOver()
     {
+
         mHighestScoreText.text = "Highscore: " + mHighestScore.getScore();
         mLastScoreText.text = "" + mScore;
 
@@ -383,10 +383,10 @@ public class GameController : MonoBehaviour
         }
         else
             mLastScoreText.fontSize = 60;
+        mGameIsOver = true;
 
         PauseGame();
         mGameOverPanel.SetActive(true);
-        mGameIsOver = true;
 
         if (mHighestScore.getScore() < mScore)
         {
@@ -422,10 +422,20 @@ public class GameController : MonoBehaviour
     {
         mGameIsPaused = true;
         Time.timeScale = 0;
+
+        if (mGameIsOver == false)
+        {
+            mPausePanel.SetActive(true);
+        }
     }
     public void ResumeGame()
     {
         Time.timeScale = 1;
         mGameIsPaused = false;
+        mPausePanel.SetActive(false);
+    }
+    public void SwitchToMainMenu()
+    {
+
     }
 }
