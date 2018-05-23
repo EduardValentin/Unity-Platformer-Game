@@ -67,7 +67,7 @@ public class GameController : MonoBehaviour
 
     private void Awake()
     {
-        StartCoroutine(SpawnPerkAfterTime(10));
+        StartCoroutine(SpawnPerkAfterTime(15));
         mCloneObstacle = GameObject.FindGameObjectWithTag("ClonaObstacol");
 
         // Se updateaza scorul maxim
@@ -414,11 +414,11 @@ public class GameController : MonoBehaviour
 
     IEnumerator SpawnPerkAfterTime(float time)
     {
+        float modifier;
         while (true)
         {
-            print("Spawning perk in " + time + " seconds");
-            yield return new WaitForSeconds(time);
-
+            modifier = UnityEngine.Random.RandomRange(-5,5);
+            yield return new WaitForSeconds(time + modifier);
             Instantiate(mPerkClone, new Vector3(mCamera.transform.position.x + UnityEngine.Random.Range(0, 1), mCamera.transform.position.y + 10, mPerkClone.transform.position.z), mPerkClone.transform.rotation);
 
         }
