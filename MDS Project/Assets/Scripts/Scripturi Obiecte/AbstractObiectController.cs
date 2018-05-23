@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public abstract class scriptObiect : MonoBehaviour {
+public abstract class AbstractObiectController : MonoBehaviour {
 
     public float mDuratieTravers;
     public float mDistance;
@@ -17,9 +17,14 @@ public abstract class scriptObiect : MonoBehaviour {
     {
         mDirection = mDirection.normalized;
         mPozitieStart = transform.position;
-        ComputeTargetPoint(mPozitieStart,mDirection,mDistance); 
-        StartCoroutine(moveLinear(mWaitAfterTarget));   // Incepe miscarea
+        ComputeTargetPoint(mPozitieStart,mDirection,mDistance);
+        StartMovement();
 
+    }
+
+    protected virtual void StartMovement()
+    {
+        // do nothing...
     }
 
 
