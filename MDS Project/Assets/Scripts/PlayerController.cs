@@ -13,20 +13,21 @@ public class PlayerController : MonoBehaviour
     private int mScore;
     [HideInInspector]
     public bool mJumpedOnce;
-	  public int mHighestPoint;
+    public int mHighestPoint;
     private bool mIsInvulnerable;
     private SpriteRenderer mSpriteRenderer;
-	  public AudioSource jumpSound;
+	public AudioSource jumpSound;
     void Start()
     {
         mIsInvulnerable = false;
-		    mHighestPoint = (int)transform.position.y;
+		mHighestPoint = (int)transform.position.y;
         mJumpedOnce = false;
         mRbody = GetComponent<Rigidbody2D>();
         mJumpReady = true;
         mDirection = 1;
         mGameController = mGameControllerObj.GetComponent<GameController>();
         mSpriteRenderer = GetComponent<SpriteRenderer>();
+    
     }
 
     void Update()

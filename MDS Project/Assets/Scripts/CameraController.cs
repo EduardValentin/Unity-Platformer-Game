@@ -15,7 +15,7 @@ public class CameraController : MonoBehaviour {
 		camera = GetComponent<Camera> ();
     }
 
-	/*
+	
     private float ComputeCameraSpeed(float x) 
     {
 		// primeste ca input distanta dintre limita inferioara si player si returneaza viteza cu care camera se ridica.
@@ -28,7 +28,7 @@ public class CameraController : MonoBehaviour {
 
         return rvalue;
     }
-    */
+    
 
 	public float dampTime = 0.15f;
 	private Vector3 velocity = Vector3.zero;
@@ -36,23 +36,11 @@ public class CameraController : MonoBehaviour {
 
     private void Update()
     {
-		if (target && target.position.y > this.transform.position.y)
-		{
-			Vector3 point = camera.WorldToViewportPoint(new Vector3(0,target.position.y,0));
-			Vector3 delta = target.position - camera.ViewportToWorldPoint(new Vector3(0.5f, 0.5f, point.z)); //(new Vector3(0.5, 0.5, point.z));
-			Vector3 destination = transform.position + delta;
-			destination.x = this.transform.position.x;
-
-			transform.position = Vector3.SmoothDamp(transform.position, destination, ref velocity, dampTime);
-		}
-
-		/*
         mLowerLimit = transform.position + mOffset;
-        if(mCharacter.GetComponent<PlayerController>().mJumpedOnce)
+        if (mCharacter.GetComponent<PlayerController>().mJumpedOnce)
         {
-           
-            transform.position += Vector3.up * Time.deltaTime  * mDificultyScale * ComputeCameraSpeed(mCharacter.transform.position.y - mLowerLimit.y);
+
+            transform.position += Vector3.up * Time.deltaTime * mDificultyScale * ComputeCameraSpeed(mCharacter.transform.position.y - mLowerLimit.y);
         }
-        */
     }
 }
