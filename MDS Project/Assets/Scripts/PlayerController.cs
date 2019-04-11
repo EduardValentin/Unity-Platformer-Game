@@ -55,7 +55,7 @@ public class PlayerController : MonoBehaviour
             }
         }
 
-		if (mJumpReady == true && Input.GetKeyDown("space") /*Input.touchCount > 0 && Input.GetTouch(0).phase == TouchPhase.Began*/)
+		if ( mJumpReady == true && Input.GetKeyDown("space")  /*mJumpReady == true && Input.touchCount > 0 && Input.GetTouch(0).phase == TouchPhase.Began*/ )
         {
 			jumpSound.Play ();
             mJumpReady = false;
